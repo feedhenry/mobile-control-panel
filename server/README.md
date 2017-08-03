@@ -1,56 +1,12 @@
 ### Mobile Api Server
 
 The mobile api server is an extension to the Kubernetes api in order to represent mobile objects and apis.
+It also has non resource apis.
 
 ### Install locally on oc cluster up
-After cloning this repo take the following steps:
-
-*Note* improvements will be made to this over time. It is currently just a POC
-
-- Using v3.6.0-rc0 https://github.com/openshift/origin/releases/tag/v3.6.0-rc.0 . Start your oc cluster with a host config and service catalog enabled. We enabled the service catalog so that Kubernetes and OpenShift are set up to recognise the ```apiregistration.k8s.io``` api.
+To install and setup to try out the mcp, follow the instructions in the main Readme at the root of the repo.
 
 ```
-oc cluster up --service-catalog --host-config-dir=${HOME}/openshift-config/openshift.local.config
-```
-- Login as system:admin
-
-```
-oc login -u system:admin
-```
-
-- Change the restricted scc to allow hostPath volumes. This is so we can mount the front-proxy-ca.crt which is needed for authentication. Plan to change how this is done in the future.
-
-```
-oc edit scc restricted
-
-change:
-
-allowHostDirVolumePlugin:false
-
-to
-
-allowHostDirVolumePlugin:true
-
-```
-
-- Run the install script. Note there will likely be an error about roles already existing. This is fine.
-
-```
-./hack/install-apiserver/openshift/install.sh
-```
-
-- Check the api is set up. You should be able to create MobileApps and get MobileApps
-
-```
-oc login
-developer
-developer
-
-oc create -f ./hack/install-apiserver/MobileApp.json
-
-oc get mobileapps
-```
-
 
 ### Developing
 
