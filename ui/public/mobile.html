@@ -1,0 +1,31 @@
+<project-header class="top-header"></project-header>
+<project-page class="overview">
+  <div class="middle-section">
+    <div class="middle-container">
+      <div class="middle-header header-toolbar">
+        <div class="container-fluid toolbar-container">
+        </div>
+      </div>
+      <div class="middle-content">
+        <div class="container-fluid">
+          <tasks></tasks>
+          <alerts alerts="overview.state.alerts"></alerts>
+        </div>
+        <div class="container-fluid">
+          <h2>Mobile Apps</h2>
+          <div  class="row row-cards-pf">
+            <div ng-repeat="mobileapp in mobileapps" class="col-xs-12 col-sm-6 col-md-3">
+              <div class="card-pf card-pf-accented card-pf-aggregate-status">
+                <h2 class="card-pf-title">Name:{{mobileapp.metadata.name}}</h2>
+                <div class="card-pf-body">
+                  <span class="fa ng-class:['fa-' + mobileapp.metadata.annotations['mobile.k8s.io/iconClass']]"></span>
+                  <span class="">{{mobileapp.spec.clientType}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</project-page>

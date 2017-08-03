@@ -1,0 +1,22 @@
+{
+  "name": "mcp-openshift-ui-extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mcp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feedhenry/mcp-openshift-ui-extension.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/feedhenry/mcp-openshift-ui-extension/issues"
+  },
+  "homepage": "https://github.com/feedhenry/mcp-openshift-ui-extension#readme",
+  "dependencies": {
+    "js-yaml": "^3.9.1"
+  }
+}
