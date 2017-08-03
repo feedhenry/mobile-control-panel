@@ -6,3 +6,4 @@ server/bin/deepcopy-gen
 server/bin/defaulter-gen 
 server/bin/informer-gen 
 server/bin/lister-gen server/bin/server
+server/bin
