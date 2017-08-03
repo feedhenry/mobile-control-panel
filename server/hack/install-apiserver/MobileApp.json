@@ -3,7 +3,10 @@
     "apiVersion": "mobile.k8s.io/v1alpha1",
     "metadata": {
         "creationTimestamp": null,
-        "name":"myapp"
+        "name":"myapp",
+        "annotations": {
+          "mobile.k8s.io/iconClass": "android"
+        }
     },
     "spec": {
         "clientType": "android"

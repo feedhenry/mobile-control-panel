@@ -1,5 +1,5 @@
 {
-  "name": "mcp-openshift-ui-extension",
+  "name": "mobile-control-panel",
   "version": "1.0.0",
   "description": "",
   "main": "mcp.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/feedhenry/mcp-openshift-ui-extension.git"
+    "url": "git+https://github.com/feedhenry/mobile-control-panel.git"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/feedhenry/mcp-openshift-ui-extension/issues"
+    "url": "https://github.com/feedhenry/mobile-control-panel/issues"
   },
-  "homepage": "https://github.com/feedhenry/mcp-openshift-ui-extension#readme",
+  "homepage": "https://github.com/feedhenry/mobile-control-panel#readme",
   "dependencies": {
     "js-yaml": "^3.9.1"
   }
