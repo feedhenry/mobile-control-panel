@@ -23,11 +23,11 @@ oc login -u system:admin
 ```
 oc edit scc restricted
 
-change: 
+change:
 
-allowHostDirVolumePlugin:false 
+allowHostDirVolumePlugin:false
 
-to 
+to
 
 allowHostDirVolumePlugin:true
 
@@ -42,7 +42,7 @@ allowHostDirVolumePlugin:true
 - Check the api is set up. You should be able to create MobileApps and get MobileApps
 
 ```
-oc login 
+oc login
 developer
 developer
 
@@ -107,9 +107,11 @@ make images
 │       │   └── certificates
 │       └── start
 ├── hack # various scripts for use during development
-│   └── install-apiserver
-│       ├── kubernetes
-│       └── openshift
+│   ├── install-apiserver
+│   │   ├── catalog
+│   │   ├── kubernetes
+│   │   └── openshift
+│   └── template-service-broker
 ├── pkg # main go packages
 │   ├── apis # the api resource definitions and registration such as MobileApp
 │   │   └── mobile
@@ -152,4 +154,4 @@ make images
     └── integration
         └── apiserver.local.config
             └── certificates
-```            
+```
