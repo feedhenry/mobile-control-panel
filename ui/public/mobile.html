@@ -1,18 +1,53 @@
 <project-header class="top-header"></project-header>
 <project-page class="overview">
+  
   <div class="middle-section">
     <div class="middle-container">
+
       <div class="middle-header header-toolbar">
-        <div class="container-fluid toolbar-container">
-        </div>
+        <nav class="navbar navbar-default navbar-pf" role="navigation">
+          <div class="collapse navbar-collapse navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-primary">
+              <li class="active">
+                <a href="#">Mobile Apps</a>
+              </li>
+              <li>
+                <a href="#">Data Storage</a>
+              </li>
+              <li>
+                <a href="#">Push Notifications</a>
+              </li>
+              <li>
+                <a href="#">Remote Debugging</a>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  Other Services
+                  <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#">Key-Value Storage</a>
+                  </li>
+                  <li>
+                    <a href="#">Fuse Integration</a>
+                  </li>
+                  <li>
+                    <a href="#">Messaging Integration</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
       </div>
+
       <div class="middle-content">
         <div class="container-fluid">
           <tasks></tasks>
           <alerts alerts="overview.state.alerts"></alerts>
         </div>
         <div class="container-fluid">
-          <h2>Mobile Apps</h2>
           <div  class="row row-cards-pf">
             <div ng-repeat="mobileapp in mobileapps" class="col-xs-12 col-sm-6 col-md-3">
               <div class="card-pf card-pf-accented card-pf-aggregate-status">
