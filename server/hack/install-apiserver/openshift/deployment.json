@@ -1,0 +1,264 @@
+{
+    "apiVersion": "v1",
+    "kind": "Template",
+    "metadata": {
+        "name": "mobile-api-server"
+    },
+    "objects": [{
+            "apiVersion": "v1",
+            "kind": "ClusterRole",
+            "metadata": {
+                "name": "mobile-api-caller"
+            },
+            "rules": [{
+                "apiGroups": [
+                    "mobile.k8s.io"
+                ],
+                "nonResourceURLs":[
+                    "/broker/mobile.broker.io/*"
+                ],
+                "resources": [
+                    "mobileapps"
+                ],
+                "verbs": [
+                    "create",
+                    "get",
+                    "update",
+                    "delete",
+                    "list"
+                ]
+            }]
+        },
+        {
+            "kind": "ClusterRoleBinding",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "mobile-api-caller-binding"
+            },
+            "roleRef": {
+                "name": "mobile-api-caller"
+            },
+            "groupNames": [
+                "system:authenticated",
+                "system:anonymous",
+                "system:unauthenticated"
+            ],
+            "subjects": [{
+                "kind": "SystemGroup",
+                "name": "system:authenticated"
+            },{
+                "kind": "SystemGroup",
+                "name": "system:unauthenticated"
+            },{
+                "kind": "SystemGroup",
+                "name": "system:anonymous"
+            }]
+        },
+        {
+            "kind": "Role",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "extension-apiserver-authentication-reader",
+                "namespace": "${KUBE_SYSTEM_NAMESPACE}"
+            },
+            "rules": [{
+                "apiGroups": [
+                    ""
+                ],
+                "resourceNames": [
+                    "extension-apiserver-authentication"
+                ],
+                "resources": [
+                    "configmaps"
+                ],
+                "verbs": [
+                    "get"
+                ]
+            }]
+        },
+        {
+            "kind": "RoleBinding",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "extension-apiserver-authentication-reader-binding",
+                "namespace": "${KUBE_SYSTEM_NAMESPACE}"
+            },
+            "roleRef": {
+                "name": "extension-apiserver-authentication-reader",
+                "namespace": "kube-system"
+            },
+            "userNames": [
+                "system:serviceaccount:mobile:apiserver"
+            ]
+        },
+        {
+            "kind": "ClusterRoleBinding",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "system:auth-delegator-binding"
+            },
+            "roleRef": {
+                "name": "system:auth-delegator"
+            },
+            "userNames": [
+                "system:serviceaccount:mobile:apiserver"
+            ]
+        },
+        {
+            "kind": "Deployment",
+            "apiVersion": "extensions/v1beta1",
+            "metadata": {
+                "labels": {
+                    "app": "apiserver"
+                },
+                "name": "apiserver"
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "matchLabels": {
+                        "app": "apiserver"
+                    }
+                },
+                "strategy": {
+                    "rollingUpdate": {
+                        "maxSurge": 1,
+                        "maxUnavailable": 1
+                    },
+                    "type": "RollingUpdate"
+                },
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "app": "apiserver"
+                        }
+                    },
+                    "spec": {
+                        "serviceAccountName": "apiserver",
+                        "containers": [{
+                                "name": "mobile-server",
+                                "ports": [{
+                                    "containerPort": 3101
+                                }],
+                                "image": "feedhenry/mobile-apiserver:${MOBILE_APISERVER_TAG}",
+                                "imagePullPolicy": "Always",
+                                "args": [
+                                    "--etcd-servers=http://localhost:2379",
+                                    "--secure-port=3101",
+                                    "--authentication-skip-lookup",
+                                    "--tls-cert-file=/mnt/apiserver-config/serving.crt",
+                                    "--tls-private-key-file=/mnt/apiserver-config/serving.key",
+                                    "--v=10"
+                                ],
+                                "volumeMounts": [{
+                                        "name": "apiserver-ssl",
+                                        "mountPath": "/mnt/apiserver-config"
+                                    },
+                                    {
+                                        "name": "apiserver-cert",
+                                        "mountPath": "/mnt/apiserver-cert"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "etcd",
+                                "env": [{
+                                    "name": "ETCD_DATA_DIR",
+                                    "value": "/etcd-data-dir"
+                                }],
+                                "command": [
+                                    "/usr/local/bin/etcd",
+                                    "--listen-client-urls",
+                                    "http://0.0.0.0:2379",
+                                    "--advertise-client-urls",
+                                    "http://localhost:2379"
+                                ],
+                                "volumeMounts": [{
+                                    "name": "etcd-data-dir",
+                                    "mountPath": "/etcd-data-dir"
+                                }],
+                                "image": "quay.io/coreos/etcd:latest",
+                                "imagePullPolicy": "IfNotPresent"
+                            }
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "Always",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30,
+                        "volumes": [{
+                                "name": "etcd-data-dir",
+                                "emptyDir": {}
+                            },
+                            {
+                                "name": "apiserver-cert",
+                                "hostPath": {
+                                    "path": "/tmp/mobile-apiserver/config"
+                                }
+                            },
+                            {
+                                "name": "apiserver-ssl",
+                                "secret": {
+                                    "defaultMode": 420,
+                                    "secretName": "api-serving-cert",
+                                    "items": [{
+                                            "key": "tls.crt",
+                                            "path": "serving.crt"
+                                        },
+                                        {
+                                            "key": "tls.key",
+                                            "path": "serving.key"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "api",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "apiserver"
+                },
+                "annotations": {
+                    "service.alpha.openshift.io/serving-cert-secret-name": "api-serving-cert"
+                }
+            },
+            "spec": {
+                "ports": [{
+                    "name": "443-3101",
+                    "protocol": "TCP",
+                    "port": 443,
+                    "targetPort": 3101
+                }],
+                "selector": {
+                    "app": "apiserver"
+                },
+                "type": "ClusterIP",
+                "sessionAffinity": "None"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        }
+    ],
+    "parameters": [{
+            "description": "Tag of the mobile apiserver image to use",
+            "displayName": "mobile apiserver image tag",
+            "name": "MOBILE_APISERVER_TAG",
+            "value": "latest"
+        },
+        {
+            "description": "Do not change this value.",
+            "displayName": "Name of the kube-system namespace",
+            "name": "KUBE_SYSTEM_NAMESPACE",
+            "required": true,
+            "value": "kube-system"
+        }
+    ]
+}

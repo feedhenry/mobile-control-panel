@@ -1,0 +1,101 @@
+{
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "mobile-server",
+    "namespace": "mobile",
+    "labels": {
+      "apiserver": "true",
+      "app": "api"
+    }
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "apiserver": "true"
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "apiserver": "true",
+          "app": "api"
+        }
+      },
+      "spec": {
+        "serviceAccountName": "apiserver",
+        "containers": [{
+            "name": "mobile-server",
+            "ports": [{
+              "containerPort": 3101
+            }],
+            "image": "feedhenry/mobile-apiserver:latest",
+            "imagePullPolicy": "Always",
+            "args": [
+              "--etcd-servers=http://localhost:2379",
+              "--secure-port=3101",
+              "--authentication-skip-lookup",
+              "--tls-cert-file=/mnt/apiserver-config/serving.crt",
+              "--tls-private-key-file=/mnt/apiserver-config/serving.key",
+              "--requestheader-client-ca-file=/mnt/apiserver-cert/front-proxy-ca.crt",
+              "--v=10"
+            ],
+            "volumeMounts": [{
+                "name": "apiserver-ssl",
+                "mountPath": "/mnt/apiserver-config"
+              },
+              {
+                "name": "apiserver-cert",
+                "mountPath": "/mnt/apiserver-cert"
+              }
+            ]
+          },
+          {
+            "name": "etcd",
+            "env": [{
+              "name": "ETCD_DATA_DIR",
+              "value": "/etcd-data-dir"
+            }],
+            "command": [
+              "/usr/local/bin/etcd",
+              "--listen-client-urls",
+              "http://0.0.0.0:2379",
+              "--advertise-client-urls",
+              "http://localhost:2379"
+            ],
+            "volumeMounts": [{
+              "name": "etcd-data-dir",
+              "mountPath": "/etcd-data-dir"
+            }],
+            "image": "quay.io/coreos/etcd:latest",
+            "imagePullPolicy": "Always"
+          }
+        ],
+        "volumes": [{
+            "name": "etcd-data-dir",
+            "emptyDir": {}
+          },
+          {
+            "name": "apiserver-cert",
+            "hostPath": {"path":"/tmp/mobile-apiserver/config"}
+          },
+          {
+            "name": "apiserver-ssl",
+            "secret": {
+              "defaultMode": 420,
+              "secretName": "api-serving-cert",
+              "items": [{
+                  "key": "tls.crt",
+                  "path": "serving.crt"
+                },
+                {
+                  "key": "tls.key",
+                  "path": "serving.key"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

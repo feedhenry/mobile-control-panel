@@ -1,0 +1,10 @@
+{
+  "apiVersion": "servicecatalog.k8s.io/v1alpha1",
+  "kind": "Broker",
+  "metadata": {
+    "name": "mobile-broker"
+  },
+  "spec": {
+    "url": "https://api.mobile.svc:443/broker/mobile.broker.io/"
+  }
+}

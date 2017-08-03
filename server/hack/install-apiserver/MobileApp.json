@@ -1,0 +1,11 @@
+{
+    "kind": "MobileApp",
+    "apiVersion": "mobile.k8s.io/v1alpha1",
+    "metadata": {
+        "creationTimestamp": null,
+        "name":"myapp"
+    },
+    "spec": {
+        "clientType": "android"
+    }
+}

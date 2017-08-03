@@ -1,0 +1,40 @@
+{
+    "apiVersion": "v1",
+    "kind": "Template",
+    "labels": {
+        "template": "mysql-persistent-template"
+    },
+    "message": "The mobile app ${App_Name}  has been created.",
+    "metadata": {
+        "annotations": {
+            "description": "android mobile app.",
+            "iconClass": "icon-mysql-database",
+            "openshift.io/display-name": "Android Mobile App",
+            "tags": "mobile,android",
+            "template.openshift.io/documentation-url": "https://docs.openshift.org/latest/using_images/db_images/mysql.html",
+            "template.openshift.io/long-description": "This template created an initial android app representation.",
+            "template.openshift.io/provider-display-name": "Red Hat, Inc.",
+            "template.openshift.io/support-url": "https://access.redhat.com"
+        },
+        "name": "android-app"
+    },
+    "objects": [{
+        "kind": "MobileApp",
+        "apiVersion": "mobile.k8s.io/v1alpha1",
+        "metadata": {
+            "name": "${App_Name}"
+        },
+        "spec": {
+            "clientType": "android"
+        }
+    }],
+    "parameters": [
+        {
+            "description": "Name of your new android app",
+            "displayName": "Name Your App",
+            "name": "App_Name",
+            "required": true,
+            "value": ""
+        }
+    ]
+}

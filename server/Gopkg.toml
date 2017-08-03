@@ -1,0 +1,46 @@
+
+# Gopkg.toml example
+#
+# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#  name = "github.com/x/y"
+#  version = "2.4.0"
+
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/golang/glog"
+
+[[constraint]]
+  name = "github.com/spf13/cobra"
+  revision = "f62e98d28ab7ad31d707ba837a966378465c7b57"
+
+[[constraint]]
+   name = "k8s.io/apiserver"
+   revision = "fbf5c43dfaa8eb5627bac6058e3bd51db8532cbb"
+
+[[constraint]]
+   name = "k8s.io/apimachinery"
+   revision = "75b8dd260ef0469d96d578705a87cffd0e09dab8"
+
+[[constraint]]
+   name = "k8s.io/client-go"
+   revision = "76153773eaa3a268131d3d993290a194a1370585"   
+
+[[constraint]]
+   name = "github.com/coreos/go-systemd" 
+   version = "v10"  

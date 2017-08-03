@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: ClusterRole
+  metadata:
+    name: mobile-api-caller
+  rules:
+  - apiGroups:
+    - mobile.k8s.io
+    resources:
+    - mobileapps
+    verbs:
+    - create
+    - get
+    - update
+    - delete
+    - list
+- kind: ClusterRoleBinding
+  apiVersion: v1
+  metadata:
+    name: mobile-api-caller-binding
+  roleRef:
+    name: mobile-api-caller
+  groupNames:
+  - system:authenticated
+  - system:unauthenticated
+  subjects:
+  - kind: SystemGroup
+    name: system:authenticated
