@@ -18,13 +18,22 @@ angular
       .when('/project/:project/mobile', {
         templateUrl: ' extensions/mcp/mobile.html',
         controller: 'MobileOverviewController'
-      });
+      })
+      .when('/project/:project/create-mobileapp', {
+        templateUrl: 'extensions/mcp/create-mobileapp.html',
+        controller: 'CreateMobileappController'
+      })
     }
   )
   .controller('MobileOverviewController', ['$scope', '$controller', '$routeParams', 'ProjectsService', 'APIService', 'DataService', function ($scope, $controller, $routeParams, ProjectsService, APIService, DataService) {
     // Initialize the super class and extend it.
     angular.extend(this, $controller('OverviewController', {$scope: $scope}));
     console.log('MobileOverviewController');
+
+    // TODO: hook these up to service listing and filtering based on 'mobile' annotations
+    $scope.mobileservices = [];
+    $scope.nonmobileservices = [];
+
 
     ProjectsService
       .get($routeParams.project)
@@ -41,6 +50,165 @@ angular
         });
 
       }));
-   }]);
+   }])
+   .controller('CreateMobileappController',
+                function($filter,
+                        $location,
+                        $routeParams,
+                        $scope,
+                        $window,
+                        ApplicationGenerator,
+                        AuthorizationService,
+                        DataService,
+                        Navigate,
+                        ProjectsService) {
+      $scope.alerts = {};
+      $scope.projectName = $routeParams.project;
+
+      $scope.breadcrumbs = [
+        {
+          title: $scope.projectName,
+          link: "project/" + $scope.projectName
+        },
+        {
+          title: "Mobile Apps",
+          link: "project/" + $scope.projectName + "/mobile"
+        },
+        {
+          title: "Create Mobile App"
+        }
+      ];
+
+      ProjectsService
+        .get($routeParams.project)
+        .then(_.spread(function(project, context) {
+          $scope.project = project;
+          $scope.context = context;
+          $scope.breadcrumbs[0].title = $filter('displayName')(project);
+
+          var resource = {
+            group: 'mobile.k8s.io',
+            resource: 'mobileapps'
+          };
+
+          if (!AuthorizationService.canI(resource, 'create', $routeParams.project)) {
+            Navigate.toErrorPage('You do not have authority to create Mobile Apps in project ' + $routeParams.project + '.', 'access_denied');
+            return;
+          }
+
+          $scope.navigateBack = function() {
+            if ($routeParams.then) {
+              $location.url($routeParams.then);
+              return;
+            }
+
+            $window.history.back();
+          };
+      }));
+    })
+    .directive("createMobileApp",
+              function($filter,
+                        AuthorizationService,
+                        DataService,
+                        NotificationsService) {
+      return {
+        restrict: 'E',
+        scope: {
+          clientType: '=',
+          namespace: '=',
+          onCreate: '&',
+          onCancel: '&'
+        },
+        templateUrl: 'extensions/mcp/directives/create-mobileapp.html',
+        link: function($scope) {
+          $scope.clientTypes = [{
+              label: "Android",
+              iconClass: 'android',
+              clientType: 'android'
+            }, {
+              label: "iOS",
+              iconClass: 'apple',
+              clientType: 'ios'
+            }];
+
+          $scope.newMobileapp = {
+            clientType: null,
+            data: {}
+          };
+
+          var constructMobileappObject = function(data, clientType) {
+            /*
+            {
+                "kind": "MobileApp",
+                "apiVersion": "mobile.k8s.io/v1alpha1",
+                "metadata": {
+                    "creationTimestamp": null,
+                    "name":"myapp",
+                    "annotations": {
+                      "mobile.k8s.io/iconClass": "android"
+                    }
+                },
+                "spec": {
+                    "clientType": "android"
+                }
+            }*/
+            var mobileapp = {
+              apiVersion: "mobile.k8s.io/v1alpha1",
+              kind: "MobileApp",
+              metadata: {
+                name: $scope.newMobileapp.data.mobileappName,
+                // TODO: let server set the icon class based on the clientType
+                annotations: {
+                  "mobile.k8s.io/iconClass": clientType.iconClass
+                }
+              },
+              spec: {
+                clientType: clientType.clientType
+              }
+            };
+
+            return mobileapp;
+          };
+
+          var hideErrorNotifications = function() {
+            NotificationsService.hideNotification("create-mobileapp-error");
+          };
+
+          $scope.nameChanged = function() {
+            $scope.nameTaken = false;
+          };
+
+          $scope.create = function() {
+            hideErrorNotifications();
+            var newMobileapp = constructMobileappObject($scope.newMobileapp.data, $scope.newMobileapp.clientType);
+            DataService.create('mobileapps', null, newMobileapp, $scope).then(function(mobileapp) { // Success
+              NotificationsService.addNotification({
+                type: "success",
+                message: "Mobile App " + newMobileapp.metadata.name + " was created."
+              });
+              $scope.onCreate({newMobileapp: mobileapp});
+            }, function(result) { // Failure
+              var data = result.data || {};
+              if (data.reason === 'AlreadyExists') {
+                $scope.nameTaken = true;
+                return;
+              }
+              NotificationsService.addNotification({
+                id: "create-mobileapp-error",
+                type: "error",
+                message: "An error occurred while creating the mobile app.",
+                details: $filter('getErrorDetails')(result)
+              });
+            });
+          };
+
+          $scope.cancel = function() {
+            hideErrorNotifications();
+            $scope.onCancel();
+          };
+        }
+      };
+    })
+   
 
 hawtioPluginLoader.addModule('mobileOverviewExtension');
