@@ -21,11 +21,7 @@
                     "mobileapps"
                 ],
                 "verbs": [
-                    "create",
-                    "get",
-                    "update",
-                    "delete",
-                    "list"
+                    "*"
                 ]
             }]
         },

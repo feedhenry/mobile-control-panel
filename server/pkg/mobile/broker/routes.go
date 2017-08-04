@@ -46,6 +46,8 @@ func Route(container *restful.Container, path string, b Broker) {
 	ws.Route(ws.PUT("/service_instances/{instance_id}/service_bindings/{binding_id}").To(shim(bind)))
 	ws.Route(ws.DELETE("/service_instances/{instance_id}/service_bindings/{binding_id}").To(shim(unbind)))
 	container.Add(&ws)
+	//for debug purposes should be removed in future.
+	restful.SetCacheReadEntity(true)
 }
 
 func atoi(s string) int {
@@ -76,22 +78,22 @@ func provision(b Broker, req *restful.Request) *Response {
 	// grab the instance id of the provision request
 	instanceID := req.PathParameter("instance_id")
 
-	glog.Infof("processing provision request for %s", instanceID)
+	glog.Infof("processing provision request for %s", instanceID, req.QueryParameter("accepts_incomplete"))
 
 	// make sure it's a valid uuid
 	if errors := ValidateUUID(field.NewPath("instance_id"), instanceID); errors != nil {
 		return &Response{http.StatusBadRequest, nil, errors.ToAggregate()}
 	}
-
 	var preq ProvisionRequest
 	err := req.ReadEntity(&preq)
 	if err != nil {
 		return &Response{http.StatusBadRequest, nil, err}
 	}
+	glog.Info("Provision request ", preq)
 
 	// this broker performs asynchronous provisioning, so the client must
 	// indicate that it will accept incomplete(async) provision responses.
-	if !preq.AcceptsIncomplete {
+	if !preq.AcceptsIncomplete && req.QueryParameter("accepts_incomplete") != "true" {
 		return &Response{http.StatusUnprocessableEntity, AsyncRequired, nil}
 	}
 

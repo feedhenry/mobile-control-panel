@@ -1,0 +1,22 @@
+language: go
+sudo: required
+
+services:
+  - docker
+
+go:
+  - 1.7.x
+  - master
+
+
+before_install:
+  - sudo apt-get install realpath -y
+
+script:
+  - echo $GOPATH && go get k8s.io/kubernetes && cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.7.0
+  - cd server && make build test test-integration verify
+
+matrix:
+  allow_failures:
+  - go: master
+  fast_finish: true
