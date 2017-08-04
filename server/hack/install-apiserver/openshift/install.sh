@@ -4,11 +4,16 @@
 #ROUTING_SUFFIX="${HOSTNAME}"
 #sudo ifconfig lo0 alias ${PUBLIC_IP}
 #oc cluster up --image=openshift/origin --version=v3.6.0-rc.0 --service-catalog=true --routing-suffix=${ROUTING_SUFFIX} --public-hostname=${HOSTNAME}  --host-config-dir=/Users/kelly/openshift-config/openshift.local.config
-oc cluster up --image=openshift/origin --version=v3.6.0-rc.0 --service-catalog=true --host-config-dir=/Users/kelly/openshift-config/openshift.local.config
+#oc cluster up --image=openshift/origin --version=v3.6.0-rc.0 --service-catalog=true --host-config-dir=/Users/kelly/openshift-config/openshift.local.config
+
+set -x
 
 targetNamespace=mobile
 apiserverConfigDir=/tmp/mobile-apiserver/config
-masterConfigDir=${HOME}/openshift-config/openshift.local.config/master
+scriptPath=$(dirname $0)
+scriptAbsolutePath=$(cd $scriptPath && pwd)
+openshiftConfigDir=$(cd $scriptAbsolutePath/../../../../ui && pwd)
+masterConfigDir=${openshiftConfigDir}/master
 mkdir -p ${apiserverConfigDir} || true
 #nodeManifestDir=/Users/kelly/openshift-config/openshift.local.config/node-localhost/static-pods
 
@@ -27,7 +32,7 @@ done
 saToken=$(oc -n ${targetNamespace} sa get-token apiserver)
 # TODO do this a LOT better
 # start with admin.kubeconfig
-cp ${masterConfigDir}/admin.kubeconfig ${apiserverConfigDir}/kubeconfig
+sudo cp ${masterConfigDir}/admin.kubeconfig ${apiserverConfigDir}/kubeconfig
 # remove all users
 oc --config=${apiserverConfigDir}/kubeconfig config unset users
 # set the service account token

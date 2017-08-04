@@ -1,6 +1,6 @@
 console.log('Mobile Control Panel Extension Loaded');
 
-window.OPENSHIFT_CONSTANTS.PROJECT_NAVIGATION.splice(1, 0, 
+window.OPENSHIFT_CONSTANTS.PROJECT_NAVIGATION.splice(1, 0, {
   label: "Mobile",
   iconClass: "fa fa-mobile",
   href: "/mobile",

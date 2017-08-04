@@ -36,7 +36,7 @@ oc patch scc/restricted -p '{"allowHostDirVolumePlugin":true}'
 
 # Install the Mobile API Server
 cd $MOBILE_API_SERVER_DIR
-bash -x $MOBILE_API_SERVER_INSTALL_SCRIPT
+$MOBILE_API_SERVER_INSTALL_SCRIPT
 
 # TODO: Wait for successful start of the Mobile API Server
 
