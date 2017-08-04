@@ -6,7 +6,6 @@ It also has non resource apis.
 ### Install locally on oc cluster up
 To install and setup to try out the mcp, follow the instructions in the main Readme at the root of the repo.
 
-```
 
 ### Developing
 
