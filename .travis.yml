@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get install realpath -y
 
 script:
-  - echo $GOPATH && go get k8s.io/kubernetes && cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.7.0
+  #- echo $GOPATH && go get k8s.io/kubernetes && cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.7.0
   - cd server && make build test test-integration verify
 
 matrix:
