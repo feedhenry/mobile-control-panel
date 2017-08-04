@@ -8,13 +8,12 @@ go:
   - 1.7.x
   - master
 
-
-before_install:
-  - sudo apt-get install realpath -y
+install:
+  - mkdir $GOPATH/src/k8s.io && cd $GOPATH/src/k8s.io && git clone https://github.com/kubernetes/kubernetes.git
+  - cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.7.0
 
 script:
-  #- echo $GOPATH && go get k8s.io/kubernetes && cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.7.0
-  - cd server && make build test test-integration verify
+  - cd $HOME/gopath/src/github.com/feedhenry/mobile-control-panel/server && make build test test-integration verify
 
 matrix:
   allow_failures:

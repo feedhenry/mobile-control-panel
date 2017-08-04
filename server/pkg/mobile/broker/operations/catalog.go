@@ -9,31 +9,7 @@ import (
 // Catalog is an implementation of the service broker catalog endpoint.
 // This implementation returns a static set of services and plans.
 func (b *BrokerOperations) Catalog() *openservicebroker.Response {
-
 	services := make([]*openservicebroker.Service, 2)
-
-	/**
-
-				alphaInstanceCreateParameterSchema": {
-			            "$schema": "http://json-schema.org/draft-04/schema",
-			            "additionalProperties": false,
-			            "properties": {
-			              "ENABLE_OAUTH": {
-			                "default": "true",
-			                "description": "Whether to enable OAuth OpenShift integration. If false, the static account 'admin' will be initialized with the password 'password'.",
-			                "title": "Enable OAuth in Jenkins",
-			                "type": "string"
-						  },
-									   "required": [
-		              "template.openshift.io/requester-username"
-		            ],
-					"type": "object"
-								"default": "true",
-	                "description": "Whether to enable OAuth OpenShift integration. If false, the static account 'admin' will be initialized with the password 'password'.",
-	                "title": "Enable OAuth in Jenkins",
-	                "type": "string"
-				**/
-
 	services[0] = &openservicebroker.Service{
 		Name:        "android-app",
 		ID:          "serviceUUID",
@@ -41,10 +17,11 @@ func (b *BrokerOperations) Catalog() *openservicebroker.Response {
 		Tags:        []string{"mobile", "android"},
 		Bindable:    false,
 		Metadata: map[string]interface{}{
-			"displayName": "Android Starter",
+			"displayName":                    "Android App",
+			"console.openshift.io/iconClass": "fa fa-android",
 		},
 		Plans: []openservicebroker.Plan{
-			openservicebroker.Plan{
+			{
 				Name:        "gold-plan",
 				ID:          "gold-plan-id",
 				Description: "gold plan description",
@@ -57,11 +34,11 @@ func (b *BrokerOperations) Catalog() *openservicebroker.Response {
 								Schema:              "http://json-schema.org/draft-04/schema",
 								AddtionalProperties: false,
 								Properties: map[string]map[string]string{
-									"name": map[string]string{
+									"name": {
 										"title": "The name of your app",
 										"type":  "string",
 									},
-									"type": map[string]string{
+									"type": {
 										"default": "android",
 										"title":   "The app type",
 										"type":    "string",
@@ -80,13 +57,14 @@ func (b *BrokerOperations) Catalog() *openservicebroker.Response {
 		Name:        "ios-app",
 		ID:          "serviceIodUUID",
 		Description: "start an ios application.",
-		Tags:        []string{"mobile", "android"},
+		Tags:        []string{"mobile", "ios", "apple"},
 		Bindable:    false,
 		Metadata: map[string]interface{}{
-			"displayName": "iOS Starter",
+			"displayName":                    "iOS App",
+			"console.openshift.io/iconClass": "fa fa-apple",
 		},
 		Plans: []openservicebroker.Plan{
-			openservicebroker.Plan{
+			{
 				Name:        "gold-plan",
 				ID:          "gold-plan-id",
 				Description: "gold plan description",
@@ -99,11 +77,11 @@ func (b *BrokerOperations) Catalog() *openservicebroker.Response {
 								Schema:              "http://json-schema.org/draft-04/schema",
 								AddtionalProperties: false,
 								Properties: map[string]map[string]string{
-									"name": map[string]string{
+									"name": {
 										"title": "The name of your app",
 										"type":  "string",
 									},
-									"type": map[string]string{
+									"type": {
 										"default": "ios",
 										"title":   "The app type",
 										"type":    "string",
