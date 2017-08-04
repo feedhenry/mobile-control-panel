@@ -66,6 +66,10 @@ mv ${apiserverConfigDir}/tls.key ${apiserverConfigDir}/serving.key
 
 cp ${masterConfigDir}/front-proxy-ca.crt ${apiserverConfigDir}/
 
+#setup the server as a broker
+
+oc create -f hack/install-apiserver/catalog/mobile-broker.json
+
 # 7.  Installer binds “known” roles to SA user
 # TODO remove this bit once we bootstrap these roles
 #oc create -f hack/install-apiserver/openshift/prestart.json || true

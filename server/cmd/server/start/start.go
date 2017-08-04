@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/golang/glog"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -37,7 +38,7 @@ import (
 	genericoptions "k8s.io/apiserver/pkg/server/options"
 )
 
-const defaultEtcdPathPrefix = "/registry/mobile.kubernetes.io"
+const defaultEtcdPathPrefix = "/registry/mobile.k8s.io"
 
 // MobileServerOptions are the options used when starting the mobile apiserver
 type MobileServerOptions struct {
@@ -58,6 +59,7 @@ type MobileServerOptions struct {
 	StandaloneMode bool
 }
 
+// NewMobileServerOptions sets up and returns the default options for the MobileServer
 func NewMobileServerOptions() *MobileServerOptions {
 	recommended := genericoptions.NewRecommendedOptions(defaultEtcdPathPrefix, apiserver.Scheme, apiserver.Codecs.LegacyCodec(v1alpha1.SchemeGroupVersion))
 	o := &MobileServerOptions{
@@ -68,15 +70,15 @@ func NewMobileServerOptions() *MobileServerOptions {
 		AuthenticationOptions:   recommended.Authentication,
 		AuthorizationOptions:    recommended.Authorization,
 	}
-	fmt.Println("mobile options request headers", o.AuthenticationOptions.RequestHeader.UsernameHeaders)
 	return o
 }
 
+// allows us to override options using flags
 func (o *MobileServerOptions) addFlags(flags *pflag.FlagSet) {
 	o.RecommendedOptions.AddFlags(flags)
 }
 
-// NewCommandStartMobileServer provides a CLI handler for 'start master' command
+// NewCommandStartMobileServer provides a CLI handler for 'start mobile' command
 func NewCommandStartMobileServer(stopCh <-chan struct{}) *cobra.Command {
 	o := NewMobileServerOptions()
 
@@ -117,6 +119,7 @@ func (o *MobileServerOptions) standAlone() bool {
 
 // TODO LOOK CLOSELY AT https://github.com/kubernetes-incubator/service-catalog/blob/4679685a7364cd3f8dd999d7205654589e19fbdb/cmd/apiserver/app/server/util.go#L52
 
+// Config configures our movile server ready for serving.
 func (o MobileServerOptions) Config() (*apiserver.Config, error) {
 	// TODO have a "real" external address
 	serverConfig := genericapiserver.NewConfig()
@@ -126,7 +129,7 @@ func (o MobileServerOptions) Config() (*apiserver.Config, error) {
 	}
 	if !o.standAlone() {
 
-		fmt.Println("server starting in cluster mode")
+		glog.Info("server starting in standalone mode.")
 		if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
 			return nil, errors.Wrap(err, "failed to applyto serverconfig")
 		}
@@ -165,6 +168,7 @@ func (o MobileServerOptions) Config() (*apiserver.Config, error) {
 	return config, nil
 }
 
+// RunMobileServer will actually configure and start our MobileServer
 func (o MobileServerOptions) RunMobileServer(stopCh <-chan struct{}) error {
 	config, err := o.Config()
 	if err != nil {
@@ -176,6 +180,7 @@ func (o MobileServerOptions) RunMobileServer(stopCh <-chan struct{}) error {
 		return errors.Wrap(err, "failed to Complete config")
 	}
 	time.AfterFunc(time.Second*2, func() {
+		//test we can use our clientset
 		client, err := clientset.NewForConfig(server.GenericAPIServer.LoopbackClientConfig)
 		b, err := client.Discovery().RESTClient().Get().AbsPath("/apis/mobile.k8s.io/v1alpha1").DoRaw()
 		fmt.Println("discovery", err, string(b))
