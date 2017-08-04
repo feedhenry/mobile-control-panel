@@ -1,24 +1,29 @@
 # Mobile Control Panel UI
 
+## Overview
 
-## Prerequisites
+The Mobile Control Panel (MCP) UI is built using:
+* AngularJS https://angularjs.org/
+* Patternfly http://www.patternfly.org/
 
-* `oc` cli >= 3.6.0-rc0 https://github.com/openshift/origin/releases (Known issue with service-catalog in 3.6.0)
-* Node.js >= 4(for install script(s))
+It is developed as a set of OpenShift UI Extensions.
+All Javascript is delivered as a single file (mcp.js).
+All CSS is delivered as a single file (mcp.css).
 
-## Local Installation
+The extension config looks something like this in the OpenShift master-config.yaml
 
-Start openshift, configure it for MCP Extension development, and install the mobile apiserver
-
+```yaml
+assetConfig:
+  extensionDevelopment: true
+  extensionProperties: null
+  extensionScripts:
+    - /var/lib/origin/openshift.local.config/master/servicecatalog-extension.js
+    - /var/lib/origin/openshift.local.config/public/mcp.js
+  extensionStylesheets:
+    - /var/lib/origin/openshift.local.config/public/mcp.css
+  extensions:
+    - name: mcp
+      sourceDirectory: /var/lib/origin/openshift.local.config/public
 ```
-./install.sh
-```
 
-The MCP Extension should now be visible in the OpenShift Web Console after the 'origin' container has restarted.
-Visit https://127.0.0.1:8443 to see the Console.
-
-To create a mobile app, use `oc` e.g.
-
-```
-oc create -f ../server/hack/install-apiserver/MobileApp.json
-```
+When doing local development against an `oc cluster`, the `ui` folder would be mounted into the docker `origin` container as the config dir. This allows the path `/var/lib/origin/openshift.local.config/public` to point to the `./ui/public` folder.

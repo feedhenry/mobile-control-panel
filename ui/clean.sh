@@ -6,5 +6,8 @@ set -x
 oc cluster down
 
 # Remove openshift config dir things
-sudo rm -rf ./master
-sudo rm -rf ./node-localhost
+SCRIPT_PATH=$(dirname $0)
+SCRIPT_ABSOLUTE_PATH=$(cd $SCRIPT_PATH && pwd)
+
+sudo rm -rf ${SCRIPT_ABSOLUTE_PATH}/master
+sudo rm -rf ${SCRIPT_ABSOLUTE_PATH}/node-localhost
