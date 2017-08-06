@@ -34,6 +34,32 @@ type DashboardClient struct {
 	RedirectURI string `json:"redirect_uri"`
 }
 
+// Create this is custom to make it work with the Mall should be removed if we do not need it in the future.
+type Create struct {
+	Schema              string                       `json:"$schema"`
+	AddtionalProperties bool                         `json:"additionalProperties"`
+	Properties          map[string]map[string]string `json:"properties"`
+	Required            []string                     `json:"required"`
+	Type                string                       `json:"type"`
+}
+
+type CreateSchema struct {
+	Parameters interface{} `json:"parameters,omitempty"`
+}
+
+// Schema represents a plan's schemas for service instance and binding create
+// and update.
+type Schema struct {
+	ServiceInstances *ServiceInstanceSchema `json:"service_instance,omitempty"`
+}
+
+// ServiceInstanceSchema represents a plan's schemas for a create and update
+// of a service instance.
+type ServiceInstanceSchema struct {
+	Create *CreateSchema `json:"create,omitempty"`
+	Update *CreateSchema `json:"update,omitempty"`
+}
+
 // Plan is a plan within a service offering
 type Plan struct {
 	ID          string                 `json:"id"`
@@ -42,6 +68,7 @@ type Plan struct {
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	Free        bool                   `json:"free,omitempty"`
 	Bindable    bool                   `json:"bindable,omitempty"`
+	Schema      *Schema                `json:"schemas,omitempty"`
 }
 
 // CatalogResponse is sent as the response to catalog requests
@@ -63,8 +90,14 @@ const (
 	LastOperationStateFailed     LastOperationState = "failed"
 )
 
+type KubernetesContext struct {
+	Platform  string `json:"platform"`
+	Namespace string `json:"namespace"`
+}
+
 // ProvisionRequest is sent as part of a provision api call
 type ProvisionRequest struct {
+	Context           KubernetesContext `json:"context"`
 	ServiceID         string            `json:"service_id"`
 	PlanID            string            `json:"plan_id"`
 	Parameters        map[string]string `json:"parameters,omitempty"`

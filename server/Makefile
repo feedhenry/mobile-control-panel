@@ -49,11 +49,6 @@ GO_BUILD       = env GOOS=$(PLATFORM) GOARCH=$(ARCH) go build -i $(GOFLAGS) \
                    -ldflags "-X $(PKG)/pkg.VERSION=$(VERSION)"
 BASE_PATH      = $(ROOT:/src/github.com/feedhenry/mobile-control-panel/server/=)
 
-# precheck to avoid kubernetes-incubator/service-catalog#361
-$(if $(realpath vendor/k8s.io/kubernetes/vendor), \
-	$(error the vendor directory exists in the kubernetes \
-		vendored source and must be flattened. \
-		run 'glide i -v'))
 
 ifdef UNIT_TESTS
 	UNIT_TEST_FLAGS=-run $(UNIT_TESTS) -v
@@ -138,12 +133,6 @@ verify: .generate_files verify-client-gen
 	@bash -c '[ "`cat .out`" == "" ] || \
 	  (echo -e "\n*** Please 'gofmt' the following:" ; cat .out ; echo ; false)'
 	@rm .out
-	@
-	@echo Running repo-infra verify scripts
-	@echo Running href checker:
-	@build/verify-links.sh
-	@echo Running errexit checker:
-	@build/verify-errexit.sh
 
 verify-client-gen: .generate_files
 	$(SCRIPT_DIR)/verify-codegen.sh
@@ -160,7 +149,7 @@ test-unit: build
 
 test-integration: build
 	@echo Starting etcd:
-	docker run --name=mobile-etcd -d -p 2379:2379 quay.io/coreos/etcd:v3.0.17
+	docker run --rm -d -p 2379:2379 --name mobile-etcd quay.io/coreos/etcd:v3.1.0 /usr/local/bin/etcd --advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379
 	@echo Running integration tests:
 	go test \
 	  $(addprefix $(PKG)/,test/integration)

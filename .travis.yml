@@ -1,0 +1,21 @@
+language: go
+sudo: required
+
+services:
+  - docker
+
+go:
+  - 1.7.x
+  - master
+
+install:
+  - mkdir $GOPATH/src/k8s.io && cd $GOPATH/src/k8s.io && git clone https://github.com/kubernetes/kubernetes.git
+  - cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.7.0
+
+script:
+  - cd $HOME/gopath/src/github.com/feedhenry/mobile-control-panel/server && make build test test-integration verify
+
+matrix:
+  allow_failures:
+  - go: master
+  fast_finish: true
