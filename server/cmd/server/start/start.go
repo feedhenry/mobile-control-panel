@@ -122,9 +122,8 @@ func (o *MobileServerOptions) standAlone() bool {
 // Config configures our movile server ready for serving.
 func (o MobileServerOptions) Config() (*apiserver.Config, error) {
 	// TODO have a "real" external address
-	serverConfig := genericapiserver.NewConfig()
-	serverConfig.WithSerializer(apiserver.Codecs)
-	if err := o.RecommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", net.ParseIP("127.0.0.1")); err != nil {
+	serverConfig := genericapiserver.NewConfig(apiserver.Codecs)
+	if err := o.RecommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", nil, []net.IP{net.ParseIP("127.0.0.1")}); err != nil {
 		return nil, fmt.Errorf("error creating self-signed certificates: %v", err)
 	}
 	if !o.standAlone() {
@@ -136,9 +135,9 @@ func (o MobileServerOptions) Config() (*apiserver.Config, error) {
 
 	} else {
 		//allow for local dev without kubernetes
-		o.RecommendedOptions.SecureServing.ServingOptions.BindPort = 3101
+		o.RecommendedOptions.SecureServing.BindPort = 3001
 		o.RecommendedOptions.Authentication.SkipInClusterLookup = true
-		o.RecommendedOptions.SecureServing.ServingOptions.BindAddress = net.ParseIP("0.0.0.0")
+		o.RecommendedOptions.SecureServing.BindAddress = net.ParseIP("0.0.0.0")
 		etcdURL, ok := os.LookupEnv("KUBE_INTEGRATION_ETCD_URL")
 		if !ok {
 			etcdURL = "http://127.0.0.1:2379"
