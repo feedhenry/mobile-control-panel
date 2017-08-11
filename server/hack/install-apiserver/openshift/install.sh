@@ -7,6 +7,7 @@
 #oc cluster up --image=openshift/origin --version=v3.6.0-rc.0 --service-catalog=true --host-config-dir=/Users/kelly/openshift-config/openshift.local.config
 
 set -x
+set -e
 
 targetNamespace=mobile
 apiserverConfigDir=/tmp/mobile-apiserver/config
@@ -32,13 +33,15 @@ done
 
 
 # 3. deploy our api server and register the api service with master
+# OK for these to exit with non-zero if resrouces already exist
+set +e
 oc new-app -f hack/install-apiserver/openshift/deployment.json -n ${targetNamespace}
 oc create -f hack/install-apiserver/apiservice.json
 # 4. set up some policies to allow our apiserver to delegate auth
 oc create policybinding kube-system -n kube-system
 oc adm policy add-cluster-role-to-user system:auth-delegator -n ${targetNamespace} -z apiserver
 oc adm policy add-role-to-user extension-apiserver-authentication-reader -n kube-system --role-namespace=kube-system system:serviceaccount:${targetNamespace}:apiserver
-
+set -e
 
 until oc -n ${targetNamespace} get secrets/api-serving-cert; do
 	echo "waiting for oc -n ${targetNamespace} get secrets/api-serving-cert"
