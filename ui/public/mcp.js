@@ -1,5 +1,6 @@
 console.log('Mobile Control Panel Extension Loaded');
 
+// Add 'Mobile' to the left nav
 window.OPENSHIFT_CONSTANTS.PROJECT_NAVIGATION.splice(1, 0, {
   label: "Mobile",
   iconClass: "fa fa-mobile",
@@ -9,6 +10,14 @@ window.OPENSHIFT_CONSTANTS.PROJECT_NAVIGATION.splice(1, 0, {
     // TODO: Can this check if any mobile apps exist first?
     return true;
   }
+});
+
+// Add 'Mobile' category and sub-categories to the Service Catalog UI
+window.OPENSHIFT_CONSTANTS.SERVICE_CATALOG_CATEGORIES.splice(OPENSHIFT_CONSTANTS.SERVICE_CATALOG_CATEGORIES.length, 0, {
+  id: 'mobile', label: 'Mobile', subCategories: [
+    {id: 'apps', label: 'Apps', tags: ['mobile'], icon: 'fa fa-mobile'},
+    {id: 'services', label: 'Services', tags: ['mobile-service'], icon: 'fa fa-database'}
+  ]
 });
 
 angular
