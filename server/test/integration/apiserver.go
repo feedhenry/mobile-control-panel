@@ -24,20 +24,19 @@ func DefaultServerConfig() (*apiserver.Config, error) {
 		return nil, err
 	}
 	options := cmdserver.NewMobileServerOptions()
-	options.RecommendedOptions.SecureServing.ServingOptions.BindPort = port
+	options.RecommendedOptions.SecureServing.BindPort = port
 	options.RecommendedOptions.Authentication.SkipInClusterLookup = true
-	options.RecommendedOptions.SecureServing.ServingOptions.BindAddress = net.ParseIP("127.0.0.1")
+	options.RecommendedOptions.SecureServing.BindAddress = net.ParseIP("127.0.0.1")
 	etcdURL, ok := os.LookupEnv("KUBE_INTEGRATION_ETCD_URL")
 	if !ok {
 		etcdURL = "http://127.0.0.1:2379"
 	}
 	options.RecommendedOptions.Etcd.StorageConfig.ServerList = []string{etcdURL}
 	options.RecommendedOptions.Etcd.StorageConfig.Prefix = uuid.New()
-	genericConfig := genericapiserver.NewConfig()
-	genericConfig.WithSerializer(apiserver.Codecs)
+	genericConfig := genericapiserver.NewConfig(apiserver.Codecs)
 	genericConfig.Authenticator = nil
 	genericConfig.Authorizer = authorizerfactory.NewAlwaysAllowAuthorizer()
-	if err := options.RecommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", net.ParseIP("127.0.0.1")); err != nil {
+	if err := options.RecommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", nil, []net.IP{net.ParseIP("127.0.0.1")}); err != nil {
 		return nil, fmt.Errorf("error creating self-signed certificates: %v", err)
 	}
 	if err := options.RecommendedOptions.Etcd.ApplyTo(genericConfig); err != nil {

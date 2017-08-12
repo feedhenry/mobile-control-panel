@@ -32,8 +32,8 @@
 [[projects]]
   name = "github.com/coreos/go-systemd"
   packages = ["daemon","journal"]
-  revision = "48702e0da86bd25e76cfef347e2adeb434a0d0a6"
-  version = "v14"
+  revision = "d2196463941895ee908e13531a23a39feb9e1243"
+  version = "v15"
 
 [[projects]]
   name = "github.com/coreos/pkg"
@@ -103,9 +103,10 @@
   revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
 
 [[projects]]
+  branch = "master"
   name = "github.com/golang/groupcache"
   packages = ["lru"]
-  revision = "02826c3e79038b59d737d3b1c0a1d937f71a4433"
+  revision = "b710c8433bd175204919eb38776e944233235d03"
 
 [[projects]]
   name = "github.com/golang/protobuf"
@@ -249,12 +250,12 @@
 [[projects]]
   name = "k8s.io/apimachinery"
   packages = ["pkg/api/equality","pkg/api/errors","pkg/api/meta","pkg/api/resource","pkg/api/testing","pkg/api/validation","pkg/api/validation/path","pkg/apimachinery","pkg/apimachinery/announced","pkg/apimachinery/registered","pkg/apis/meta/internalversion","pkg/apis/meta/v1","pkg/apis/meta/v1/unstructured","pkg/apis/meta/v1/validation","pkg/conversion","pkg/conversion/queryparams","pkg/conversion/unstructured","pkg/fields","pkg/labels","pkg/openapi","pkg/runtime","pkg/runtime/schema","pkg/runtime/serializer","pkg/runtime/serializer/json","pkg/runtime/serializer/protobuf","pkg/runtime/serializer/recognizer","pkg/runtime/serializer/streaming","pkg/runtime/serializer/versioning","pkg/selection","pkg/types","pkg/util/diff","pkg/util/errors","pkg/util/framer","pkg/util/httpstream","pkg/util/intstr","pkg/util/json","pkg/util/mergepatch","pkg/util/net","pkg/util/rand","pkg/util/runtime","pkg/util/sets","pkg/util/strategicpatch","pkg/util/uuid","pkg/util/validation","pkg/util/validation/field","pkg/util/wait","pkg/util/yaml","pkg/version","pkg/watch","third_party/forked/golang/json","third_party/forked/golang/netutil","third_party/forked/golang/reflect"]
-  revision = "75b8dd260ef0469d96d578705a87cffd0e09dab8"
+  revision = "85ace5365f33b16fc735c866a12e3c765b9700f2"
 
 [[projects]]
   name = "k8s.io/apiserver"
   packages = ["pkg/admission","pkg/apis/apiserver","pkg/apis/apiserver/install","pkg/apis/apiserver/v1alpha1","pkg/authentication/authenticator","pkg/authentication/authenticatorfactory","pkg/authentication/group","pkg/authentication/request/anonymous","pkg/authentication/request/bearertoken","pkg/authentication/request/headerrequest","pkg/authentication/request/union","pkg/authentication/request/x509","pkg/authentication/serviceaccount","pkg/authentication/token/tokenfile","pkg/authentication/user","pkg/authorization/authorizer","pkg/authorization/authorizerfactory","pkg/authorization/union","pkg/endpoints","pkg/endpoints/filters","pkg/endpoints/handlers","pkg/endpoints/handlers/negotiation","pkg/endpoints/handlers/responsewriters","pkg/endpoints/metrics","pkg/endpoints/openapi","pkg/endpoints/request","pkg/features","pkg/registry/generic","pkg/registry/generic/registry","pkg/registry/rest","pkg/server","pkg/server/filters","pkg/server/healthz","pkg/server/httplog","pkg/server/mux","pkg/server/openapi","pkg/server/options","pkg/server/routes","pkg/server/routes/data/swagger","pkg/server/storage","pkg/storage","pkg/storage/errors","pkg/storage/etcd","pkg/storage/etcd/metrics","pkg/storage/etcd/util","pkg/storage/etcd3","pkg/storage/names","pkg/storage/storagebackend","pkg/storage/storagebackend/factory","pkg/util/cache","pkg/util/feature","pkg/util/flag","pkg/util/flushwriter","pkg/util/logs","pkg/util/proxy","pkg/util/trace","pkg/util/trie","pkg/util/webhook","pkg/util/wsstream","plugin/pkg/authenticator/token/webhook","plugin/pkg/authorizer/webhook"]
-  revision = "fbf5c43dfaa8eb5627bac6058e3bd51db8532cbb"
+  revision = "1b117e5b34d4283c045a62050f8f654472472ea6"
 
 [[projects]]
   name = "k8s.io/client-go"
@@ -264,6 +265,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fe7279d5d7dc29e0500caa22b90aae4e0704a70fd991f73f16377d6e01c7a775"
+  inputs-digest = "1977bdb696506f25cf99f972d4d2de26ae0ccb3813a89f1ee880c905114713ad"
   solver-name = "gps-cdcl"
   solver-version = 1

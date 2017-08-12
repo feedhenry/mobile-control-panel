@@ -31,16 +31,12 @@
 
 [[constraint]]
    name = "k8s.io/apiserver"
-   revision = "fbf5c43dfaa8eb5627bac6058e3bd51db8532cbb"
+   revision = "1b117e5b34d4283c045a62050f8f654472472ea6"
 
 [[constraint]]
    name = "k8s.io/apimachinery"
-   revision = "75b8dd260ef0469d96d578705a87cffd0e09dab8"
+   revision = "85ace5365f33b16fc735c866a12e3c765b9700f2"
 
 [[constraint]]
    name = "k8s.io/client-go"
    revision = "76153773eaa3a268131d3d993290a194a1370585"   
-
-[[constraint]]
-   name = "github.com/coreos/go-systemd" 
-   version = "v10"  
