@@ -127,13 +127,12 @@ func (o MobileServerOptions) Config() (*apiserver.Config, error) {
 		return nil, fmt.Errorf("error creating self-signed certificates: %v", err)
 	}
 	if !o.standAlone() {
-
-		glog.Info("server starting in standalone mode.")
 		if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
 			return nil, errors.Wrap(err, "failed to applyto serverconfig")
 		}
 
 	} else {
+		glog.Info("server starting in standalone mode.")
 		//allow for local dev without kubernetes
 		o.RecommendedOptions.SecureServing.BindPort = 3001
 		o.RecommendedOptions.Authentication.SkipInClusterLookup = true
