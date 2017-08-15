@@ -20,7 +20,7 @@ go get -u k8s.io/kubernetes
 
 cd $GOPATH/src/k8s.io/kubernetes
 
-git checkout v1.7.0
+git checkout v1.6.8
 ```
 
 Dependencies are managed by dep

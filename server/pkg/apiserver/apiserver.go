@@ -120,6 +120,7 @@ func (c completedConfig) New() (*MobileServer, error) {
 	brokerOps := &operations.BrokerOperations{Client: mobileClient}
 	broker.Route(s.GenericAPIServer.HandlerContainer.Container, broker.BrokerAPIPrefix, brokerOps)
 	glog.Info("Finished installing broker api endpoints")
+	//mobileroutes.RouteSDK(s.GenericAPIServer.HandlerContainer.Container, "/sdk", mobileroutes.NewSDKHandler())
 
 	return s, nil
 }
