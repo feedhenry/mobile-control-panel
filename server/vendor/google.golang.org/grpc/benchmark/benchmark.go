@@ -1,18 +1,33 @@
 /*
  *
- * Copyright 2014 gRPC authors.
+ * Copyright 2014, Google Inc.
+ * All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following disclaimer
+ * in the documentation and/or other materials provided with the
+ * distribution.
+ *     * Neither the name of Google Inc. nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -25,20 +40,14 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"sync"
-	"testing"
-	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	testpb "google.golang.org/grpc/benchmark/grpc_testing"
-	"google.golang.org/grpc/benchmark/latency"
-	"google.golang.org/grpc/benchmark/stats"
 	"google.golang.org/grpc/grpclog"
 )
 
-// Allows reuse of the same testpb.Payload object.
-func setPayload(p *testpb.Payload, t testpb.PayloadType, size int) {
+func newPayload(t testpb.PayloadType, size int) *testpb.Payload {
 	if size < 0 {
 		grpclog.Fatalf("Requested a response with invalid length %d", size)
 	}
@@ -50,15 +59,10 @@ func setPayload(p *testpb.Payload, t testpb.PayloadType, size int) {
 	default:
 		grpclog.Fatalf("Unsupported payload type: %d", t)
 	}
-	p.Type = t
-	p.Body = body
-	return
-}
-
-func newPayload(t testpb.PayloadType, size int) *testpb.Payload {
-	p := new(testpb.Payload)
-	setPayload(p, t, size)
-	return p
+	return &testpb.Payload{
+		Type: t,
+		Body: body,
+	}
 }
 
 type testServer struct {
@@ -71,13 +75,8 @@ func (s *testServer) UnaryCall(ctx context.Context, in *testpb.SimpleRequest) (*
 }
 
 func (s *testServer) StreamingCall(stream testpb.BenchmarkService_StreamingCallServer) error {
-	response := &testpb.SimpleResponse{
-		Payload: new(testpb.Payload),
-	}
-	in := new(testpb.SimpleRequest)
 	for {
-		// use ServerStream directly to reuse the same testpb.SimpleRequest object
-		err := stream.(grpc.ServerStream).RecvMsg(in)
+		in, err := stream.Recv()
 		if err == io.EOF {
 			// read done.
 			return nil
@@ -85,8 +84,9 @@ func (s *testServer) StreamingCall(stream testpb.BenchmarkService_StreamingCallS
 		if err != nil {
 			return err
 		}
-		setPayload(response.Payload, in.ResponseType, int(in.ResponseSize))
-		if err := stream.Send(response); err != nil {
+		if err := stream.Send(&testpb.SimpleResponse{
+			Payload: newPayload(in.ResponseType, int(in.ResponseSize)),
+		}); err != nil {
 			return err
 		}
 	}
@@ -134,9 +134,6 @@ type ServerInfo struct {
 	// For "protobuf", it's ignored.
 	// For "bytebuf", it should be an int representing response size.
 	Metadata interface{}
-
-	// Network can simulate latency
-	Network *latency.Network
 }
 
 // StartServer starts a gRPC server serving a benchmark service according to info.
@@ -145,10 +142,6 @@ func StartServer(info ServerInfo, opts ...grpc.ServerOption) (string, func()) {
 	lis, err := net.Listen("tcp", info.Addr)
 	if err != nil {
 		grpclog.Fatalf("Failed to listen: %v", err)
-	}
-	nw := info.Network
-	if nw != nil {
-		lis = nw.Listener(lis)
 	}
 	s := grpc.NewServer(opts...)
 	switch info.Type {
@@ -228,122 +221,4 @@ func NewClientConn(addr string, opts ...grpc.DialOption) *grpc.ClientConn {
 		grpclog.Fatalf("NewClientConn(%q) failed to create a ClientConn %v", addr, err)
 	}
 	return conn
-}
-
-func runUnary(b *testing.B, maxConcurrentCalls, reqSize, respSize, kbps, mtu int, ltc time.Duration) {
-	s := stats.AddStats(b, 38)
-	nw := &latency.Network{Kbps: kbps, Latency: ltc, MTU: mtu}
-	b.StopTimer()
-	target, stopper := StartServer(ServerInfo{Addr: "localhost:0", Type: "protobuf", Network: nw}, grpc.MaxConcurrentStreams(uint32(maxConcurrentCalls+1)))
-	defer stopper()
-	conn := NewClientConn(
-		target, grpc.WithInsecure(),
-		grpc.WithDialer(func(address string, timeout time.Duration) (net.Conn, error) {
-			return nw.TimeoutDialer(net.DialTimeout)("tcp", address, timeout)
-		}),
-	)
-	tc := testpb.NewBenchmarkServiceClient(conn)
-
-	// Warm up connection.
-	for i := 0; i < 10; i++ {
-		unaryCaller(tc, reqSize, respSize)
-	}
-	ch := make(chan int, maxConcurrentCalls*4)
-	var (
-		mu sync.Mutex
-		wg sync.WaitGroup
-	)
-	wg.Add(maxConcurrentCalls)
-
-	// Distribute the b.N calls over maxConcurrentCalls workers.
-	for i := 0; i < maxConcurrentCalls; i++ {
-		go func() {
-			for range ch {
-				start := time.Now()
-				unaryCaller(tc, reqSize, respSize)
-				elapse := time.Since(start)
-				mu.Lock()
-				s.Add(elapse)
-				mu.Unlock()
-			}
-			wg.Done()
-		}()
-	}
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		ch <- i
-	}
-	b.StopTimer()
-	close(ch)
-	wg.Wait()
-	conn.Close()
-}
-
-func runStream(b *testing.B, maxConcurrentCalls, reqSize, respSize, kbps, mtu int, ltc time.Duration) {
-	s := stats.AddStats(b, 38)
-	nw := &latency.Network{Kbps: kbps, Latency: ltc, MTU: mtu}
-	b.StopTimer()
-	target, stopper := StartServer(ServerInfo{Addr: "localhost:0", Type: "protobuf", Network: nw}, grpc.MaxConcurrentStreams(uint32(maxConcurrentCalls+1)))
-	defer stopper()
-	conn := NewClientConn(
-		target, grpc.WithInsecure(),
-		grpc.WithDialer(func(address string, timeout time.Duration) (net.Conn, error) {
-			return nw.TimeoutDialer(net.DialTimeout)("tcp", address, timeout)
-		}),
-	)
-	tc := testpb.NewBenchmarkServiceClient(conn)
-
-	// Warm up connection.
-	stream, err := tc.StreamingCall(context.Background())
-	if err != nil {
-		b.Fatalf("%v.StreamingCall(_) = _, %v", tc, err)
-	}
-	for i := 0; i < 10; i++ {
-		streamCaller(stream, reqSize, respSize)
-	}
-
-	ch := make(chan struct{}, maxConcurrentCalls*4)
-	var (
-		mu sync.Mutex
-		wg sync.WaitGroup
-	)
-	wg.Add(maxConcurrentCalls)
-
-	// Distribute the b.N calls over maxConcurrentCalls workers.
-	for i := 0; i < maxConcurrentCalls; i++ {
-		stream, err := tc.StreamingCall(context.Background())
-		if err != nil {
-			b.Fatalf("%v.StreamingCall(_) = _, %v", tc, err)
-		}
-		go func() {
-			for range ch {
-				start := time.Now()
-				streamCaller(stream, reqSize, respSize)
-				elapse := time.Since(start)
-				mu.Lock()
-				s.Add(elapse)
-				mu.Unlock()
-			}
-			wg.Done()
-		}()
-	}
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		ch <- struct{}{}
-	}
-	b.StopTimer()
-	close(ch)
-	wg.Wait()
-	conn.Close()
-}
-func unaryCaller(client testpb.BenchmarkServiceClient, reqSize, respSize int) {
-	if err := DoUnaryCall(client, reqSize, respSize); err != nil {
-		grpclog.Fatalf("DoUnaryCall failed: %v", err)
-	}
-}
-
-func streamCaller(stream testpb.BenchmarkService_StreamingCallClient, reqSize, respSize int) {
-	if err := DoStreamingRoundTrip(stream, reqSize, respSize); err != nil {
-		grpclog.Fatalf("DoStreamingRoundTrip failed: %v", err)
-	}
 }

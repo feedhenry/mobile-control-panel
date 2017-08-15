@@ -94,7 +94,7 @@ func (c *Config) SkipComplete() completedConfig {
 
 // New returns a new instance of MobileServer from the given config.
 func (c completedConfig) New() (*MobileServer, error) {
-	genericServer, err := c.Config.GenericConfig.SkipComplete().New("mobile-api-server", genericapiserver.EmptyDelegate) // completion is done in Complete, no need for a second time
+	genericServer, err := c.Config.GenericConfig.SkipComplete().New() // completion is done in Complete, no need for a second time
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get GenericConfig")
 	}
@@ -118,7 +118,7 @@ func (c completedConfig) New() (*MobileServer, error) {
 
 	// install the open service broker spec api routes
 	brokerOps := &operations.BrokerOperations{Client: mobileClient}
-	broker.Route(s.GenericAPIServer.Handler.GoRestfulContainer, broker.BrokerAPIPrefix, brokerOps)
+	broker.Route(s.GenericAPIServer.HandlerContainer.Container, broker.BrokerAPIPrefix, brokerOps)
 	glog.Info("Finished installing broker api endpoints")
 
 	return s, nil

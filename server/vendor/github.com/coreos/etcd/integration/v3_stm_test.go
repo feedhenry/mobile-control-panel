@@ -63,8 +63,7 @@ func TestSTMConflict(t *testing.T) {
 			return nil
 		}
 		go func() {
-			iso := concurrency.WithIsolation(concurrency.RepeatableReads)
-			_, err := concurrency.NewSTM(curEtcdc, applyf, iso)
+			_, err := concurrency.NewSTMRepeatable(context.TODO(), curEtcdc, applyf)
 			errc <- err
 		}()
 	}
@@ -101,9 +100,7 @@ func TestSTMPutNewKey(t *testing.T) {
 		stm.Put("foo", "bar")
 		return nil
 	}
-
-	iso := concurrency.WithIsolation(concurrency.RepeatableReads)
-	if _, err := concurrency.NewSTM(etcdc, applyf, iso); err != nil {
+	if _, err := concurrency.NewSTMRepeatable(context.TODO(), etcdc, applyf); err != nil {
 		t.Fatalf("error on stm txn (%v)", err)
 	}
 
@@ -129,10 +126,7 @@ func TestSTMAbort(t *testing.T) {
 		stm.Put("foo", "bap")
 		return nil
 	}
-
-	iso := concurrency.WithIsolation(concurrency.RepeatableReads)
-	sctx := concurrency.WithAbortContext(ctx)
-	if _, err := concurrency.NewSTM(etcdc, applyf, iso, sctx); err == nil {
+	if _, err := concurrency.NewSTMRepeatable(ctx, etcdc, applyf); err == nil {
 		t.Fatalf("no error on stm txn")
 	}
 
@@ -192,8 +186,7 @@ func TestSTMSerialize(t *testing.T) {
 			return nil
 		}
 		go func() {
-			iso := concurrency.WithIsolation(concurrency.Serializable)
-			_, err := concurrency.NewSTM(curEtcdc, applyf, iso)
+			_, err := concurrency.NewSTMSerializable(context.TODO(), curEtcdc, applyf)
 			errc <- err
 		}()
 	}
@@ -236,9 +229,7 @@ func TestSTMApplyOnConcurrentDeletion(t *testing.T) {
 		stm.Put("foo2", "bar2")
 		return nil
 	}
-
-	iso := concurrency.WithIsolation(concurrency.RepeatableReads)
-	if _, err := concurrency.NewSTM(etcdc, applyf, iso); err != nil {
+	if _, err := concurrency.NewSTMRepeatable(context.TODO(), etcdc, applyf); err != nil {
 		t.Fatalf("error on stm txn (%v)", err)
 	}
 	if try != 2 {
