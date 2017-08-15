@@ -55,11 +55,22 @@
 /* Mobile Control Panel Extension CSS */
 @media (min-width: 768px) {
   .sidebar-left .navbar-sidebar ul.nav-sidenav-primary>li>a .fa-mobile {
-    font-size: 25px;
+    font-size: 30px;
   }
+}
+
+.card-pf-aggregate-status-mini .card-pf-title .fa {
+  font-size: 40px;
+}
+
+.card-pf-aggregate-status-mini .card-pf-title .card-pf-aggregate-status-count {
+  font-size: 22px;
 }
 
 .row.row-cards-pf {
   margin-bottom:50px;
 }
 
+h1.contains-actions {
+  overflow:visible;
+}

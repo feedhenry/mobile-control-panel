@@ -5,10 +5,10 @@
         "creationTimestamp": null,
         "name":"myapp",
         "annotations": {
-          "mobile.k8s.io/iconClass": "android"
+          "mobile.k8s.io/iconClass": "icon icon-cordova"
         }
     },
     "spec": {
-        "clientType": "android"
+        "clientType": "cordova"
     }
 }

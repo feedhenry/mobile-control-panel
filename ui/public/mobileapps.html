@@ -1,0 +1,83 @@
+<project-header class="top-header"></project-header>
+<project-page class="overview">
+  
+  <div class="middle-section">
+    <div class="middle-container">
+
+      <div class="middle-content">
+        <div class="container-fluid">
+          <tasks></tasks>
+          <alerts alerts="overview.state.alerts"></alerts>
+        </div>
+        <div class="container-fluid">
+            <h1>
+              Mobile Apps
+              <span class="page-header-link">
+                <a ng-href="http://feedhenry.org/docs/" target="_blank" href="http://feedhenry.org/docs/">
+                Learn More <i class="fa fa-external-link" aria-hidden="true"></i>
+                </a>
+              </span>
+              <div class="pull-right">
+                <a ng-href="project/{{project.metadata.name}}/create-mobileapp" class="btn btn-default">Create Mobile App</a>
+              </div>
+            </h1>
+          <div class="row row-cards-pf">
+            <div ng-repeat="mobileapp in mobileapps" class="col-xs-12 col-sm-6 col-md-3">
+              <div class="card-pf card-pf-view card-pf-view-select card-pf-view-single-select">
+                <div class="card-pf-body">
+                  <div class="card-pf-top-element">
+                    <span class="card-pf-icon-circle ng-class:[mobileapp.metadata.annotations['mobile.k8s.io/iconClass']]"></span>
+                  </div>
+                  <h2 class="card-pf-title text-center">
+                    <a href="project/{{project.metadata.name}}/browse/mobileapps/{{mobileapp.metadata.name}}">{{mobileapp.metadata.name}}</a>
+                  </h2>
+                  <div class="card-pf-items text-center">
+                    {{mobileapp.spec.clientType}}
+                  </div>
+                  <p class="card-pf-info text-center"><strong>Created On</strong> {{mobileapp.metadata.creationTimestamp}}</p>
+                </div>
+                <div class="card-pf-view-checkbox">
+                  <input type="checkbox">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h1>
+            Provisioned Services
+            <span class="page-header-link">
+              <a ng-href="http://feedhenry.org/docs/" target="_blank" href="http://feedhenry.org/docs/">
+              Learn More <i class="fa fa-external-link" aria-hidden="true"></i>
+              </a>
+            </span>
+            <div class="pull-right ng-scope" ng-if="project && ('services' | canI : 'create')">
+            <a ng-href="/" class="btn btn-default">Provision Service</a>
+            </div>
+          </h1>
+          <!-- TODO: limit this to 'mobile'' services -->
+          <div class="row row-cards-pf">
+            <div ng-repeat="serviceInstance in serviceInstances" class="col-xs-12 col-sm-6 col-md-3">
+              <div class="card-pf card-pf-view card-pf-view-select card-pf-view-single-select">
+                <div class="card-pf-body">
+                  <div class="card-pf-top-element">
+                    <span class="fa font-icon card-pf-icon-circle ng-class:[serviceInstance.iconClass]"></span>
+                  </div>
+                  <h2 class="card-pf-title text-center">
+                    {{serviceInstance.displayName}}
+                  </h2>
+                  <div class="card-pf-items text-center">
+                    {{serviceInstance.metadata.name}}
+                  </div>
+                  <p class="card-pf-info text-center"><strong>Created On</strong> {{serviceInstance.metadata.creationTimestamp}}</p>
+                </div>
+                <div class="card-pf-view-checkbox">
+                  <input type="checkbox">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</project-page>
