@@ -86,12 +86,12 @@ func (apiServerStrategy) ValidateUpdate(ctx genericapirequest.Context, obj, old 
 	// return validation.ValidateServiceInstanceUpdate(obj.(*mobileapi.ServiceInstance), old.(*mobileapi.ServiceInstance))
 }
 
-func GetAttrs(obj runtime.Object) (labels.Set, fields.Set, bool, error) {
+func GetAttrs(obj runtime.Object) (labels.Set, fields.Set, error) {
 	apiserver, ok := obj.(*mobileapi.MobileApp)
 	if !ok {
-		return nil, nil, false, fmt.Errorf("given object is not a MobileApp")
+		return nil, nil, fmt.Errorf("given object is not a MobileApp")
 	}
-	return labels.Set(apiserver.ObjectMeta.Labels), MobileAppToSelectableFields(apiserver), true, nil
+	return labels.Set(apiserver.ObjectMeta.Labels), MobileAppToSelectableFields(apiserver), nil
 }
 
 // MatchMobileApp is the filter used by the generic etcd backend to watch events

@@ -46,6 +46,8 @@ func Route(container *restful.Container, path string, b Broker) {
 	ws.Route(ws.PUT("/service_instances/{instance_id}/service_bindings/{binding_id}").To(shim(bind)))
 	ws.Route(ws.DELETE("/service_instances/{instance_id}/service_bindings/{binding_id}").To(shim(unbind)))
 	container.Add(&ws)
+	//for debug purposes should be removed in future.
+	restful.SetCacheReadEntity(true)
 }
 
 func atoi(s string) int {
