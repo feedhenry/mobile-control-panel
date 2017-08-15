@@ -138,6 +138,10 @@ angular
               label: "iOS",
               iconClass: 'apple',
               clientType: 'ios'
+            }, {
+              label: "Cordova",
+              iconClass: 'Cordova',
+              clientType: 'Cordova'
             }];
 
           $scope.newMobileapp = {

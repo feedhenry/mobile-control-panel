@@ -23,5 +23,5 @@ package v1alpha1
 type MobileAppListerExpansion interface{}
 
 // MobileAppNamespaceListerExpansion allows custom methods to be added to
-// MobileAppNamespaceLister.
+// MobileAppNamespaeLister.
 type MobileAppNamespaceListerExpansion interface{}

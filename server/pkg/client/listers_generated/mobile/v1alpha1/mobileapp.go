@@ -19,6 +19,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	mobile "github.com/feedhenry/mobile-control-panel/server/pkg/apis/mobile"
 	v1alpha1 "github.com/feedhenry/mobile-control-panel/server/pkg/apis/mobile/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
@@ -88,7 +89,7 @@ func (s mobileAppNamespaceLister) Get(name string) (*v1alpha1.MobileApp, error) 
 		return nil, err
 	}
 	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("mobileapp"), name)
+		return nil, errors.NewNotFound(mobile.Resource("mobileapp"), name)
 	}
 	return obj.(*v1alpha1.MobileApp), nil
 }

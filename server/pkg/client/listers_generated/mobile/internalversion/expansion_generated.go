@@ -23,5 +23,5 @@ package internalversion
 type MobileAppListerExpansion interface{}
 
 // MobileAppNamespaceListerExpansion allows custom methods to be added to
-// MobileAppNamespaceLister.
+// MobileAppNamespaeLister.
 type MobileAppNamespaceListerExpansion interface{}

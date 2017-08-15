@@ -34,8 +34,6 @@ type FakeMobileApps struct {
 
 var mobileappsResource = schema.GroupVersionResource{Group: "mobile.k8s.io", Version: "", Resource: "mobileapps"}
 
-var mobileappsKind = schema.GroupVersionKind{Group: "mobile.k8s.io", Version: "", Kind: "MobileApp"}
-
 func (c *FakeMobileApps) Create(mobileApp *mobile.MobileApp) (result *mobile.MobileApp, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(mobileappsResource, c.ns, mobileApp), &mobile.MobileApp{})
@@ -82,7 +80,7 @@ func (c *FakeMobileApps) Get(name string, options v1.GetOptions) (result *mobile
 
 func (c *FakeMobileApps) List(opts v1.ListOptions) (result *mobile.MobileAppList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewListAction(mobileappsResource, mobileappsKind, c.ns, opts), &mobile.MobileAppList{})
+		Invokes(testing.NewListAction(mobileappsResource, c.ns, opts), &mobile.MobileAppList{})
 
 	if obj == nil {
 		return nil, err

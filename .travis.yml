@@ -10,7 +10,7 @@ go:
 
 install:
   - mkdir $GOPATH/src/k8s.io && cd $GOPATH/src/k8s.io && git clone https://github.com/kubernetes/kubernetes.git
-  - cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.7.0
+  - cd $GOPATH/src/k8s.io/kubernetes && git checkout v1.6.8
 
 script:
   - cd $HOME/gopath/src/github.com/feedhenry/mobile-control-panel/server && make build test test-integration verify

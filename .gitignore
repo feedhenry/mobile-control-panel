@@ -1,9 +1,11 @@
 server/.generate_exes
 server/config/
-server/bin/client-gen 
-server/bin/conversion-gen 
-server/bin/deepcopy-gen 
-server/bin/defaulter-gen 
-server/bin/informer-gen 
+server/bin/client-gen
+server/bin/conversion-gen
+server/bin/deepcopy-gen
+server/bin/defaulter-gen
+server/bin/informer-gen
 server/bin/lister-gen server/bin/server
 server/bin
+.vscode
+server/cmd/server/server

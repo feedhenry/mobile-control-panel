@@ -63,7 +63,7 @@ func (apiServerStrategy) Validate(ctx genericapirequest.Context, obj runtime.Obj
 	}
 	ns := genericapirequest.NamespaceValue(ctx)
 	fmt.Println("strategy Validate", ns)
-	validAppTypes := map[string]bool{"android": true, "ios": true}
+	validAppTypes := map[string]bool{"android": true, "ios": true, "cordova": true}
 	if _, ok := validAppTypes[app.Spec.ClientType]; !ok {
 		errs = append(errs, field.Invalid(field.NewPath("Spec.ClientType"), app.Spec.ClientType, "invalid client type. valid types android or ios"))
 	}
