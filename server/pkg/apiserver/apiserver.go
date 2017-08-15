@@ -23,7 +23,6 @@ import (
 	clientset "github.com/feedhenry/mobile-control-panel/server/pkg/client/clientset_generated/internalclientset"
 	"github.com/feedhenry/mobile-control-panel/server/pkg/mobile/broker"
 	"github.com/feedhenry/mobile-control-panel/server/pkg/mobile/broker/operations"
-	mobileroutes "github.com/feedhenry/mobile-control-panel/server/pkg/mobile/web"
 	mobilestorage "github.com/feedhenry/mobile-control-panel/server/pkg/registry/mobileapp"
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
@@ -121,7 +120,7 @@ func (c completedConfig) New() (*MobileServer, error) {
 	brokerOps := &operations.BrokerOperations{Client: mobileClient}
 	broker.Route(s.GenericAPIServer.HandlerContainer.Container, broker.BrokerAPIPrefix, brokerOps)
 	glog.Info("Finished installing broker api endpoints")
-	mobileroutes.RouteSDK(s.GenericAPIServer.HandlerContainer.Container, "/sdk", mobileroutes.NewSDKHandler())
+	//mobileroutes.RouteSDK(s.GenericAPIServer.HandlerContainer.Container, "/sdk", mobileroutes.NewSDKHandler())
 
 	return s, nil
 }
