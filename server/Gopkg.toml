@@ -22,21 +22,42 @@
 
 
 [[constraint]]
+  name = "github.com/emicklei/go-restful"
+  revision = "ff4f55a206334ef123e4f79bbf348980da81ca46"
+
+[[constraint]]
   branch = "master"
   name = "github.com/golang/glog"
 
 [[constraint]]
+  name = "github.com/pborman/uuid"
+  version = "1.1.0"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"
+
+[[constraint]]
+  branch = "master"
   name = "github.com/spf13/cobra"
-  revision = "f62e98d28ab7ad31d707ba837a966378465c7b57"
 
 [[constraint]]
-   name = "k8s.io/apiserver"
-   revision = "1b117e5b34d4283c045a62050f8f654472472ea6"
+  name = "github.com/spf13/pflag"
+  version = "1.0.0"
+
+# kuberentes 1.7 no official 1.7 branch created for this repo yet
+[[constraint]]
+  revision = "ab57ed5a72c3b67058f665d660e23bae18339fc2" 
+  name = "k8s.io/apiserver"
 
 [[constraint]]
-   name = "k8s.io/apimachinery"
-   revision = "85ace5365f33b16fc735c866a12e3c765b9700f2"
+  revision = "abe34e4f5b4413c282a83011892cbeea5b32223b"
+  name = "k8s.io/apimachinery"  
 
 [[constraint]]
-   name = "k8s.io/client-go"
-   revision = "76153773eaa3a268131d3d993290a194a1370585"   
+  revision = "cc44961f935a644fb82c0f4b6591543704578db7"
+  name = "k8s.io/client-go"  
+
+[[constraint]]
+  name = "github.com/coreos/go-systemd"
+  version = "9.0.0"

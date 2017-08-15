@@ -19,6 +19,7 @@ package start
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
@@ -27,11 +28,11 @@ import (
 
 	"os"
 
-	"time"
-
 	"github.com/feedhenry/mobile-control-panel/server/pkg/apis/mobile/v1alpha1"
 	"github.com/feedhenry/mobile-control-panel/server/pkg/apiserver"
 	clientset "github.com/feedhenry/mobile-control-panel/server/pkg/client/clientset_generated/internalclientset"
+	"github.com/feedhenry/mobile-control-panel/server/pkg/client/informers_generated/internalversion"
+	mobilecontroller "github.com/feedhenry/mobile-control-panel/server/pkg/controller"
 	"github.com/pborman/uuid"
 	"k8s.io/apiserver/pkg/authorization/authorizerfactory"
 	genericapiserver "k8s.io/apiserver/pkg/server"
@@ -144,7 +145,6 @@ func (o MobileServerOptions) Config() (*apiserver.Config, error) {
 		o.RecommendedOptions.Etcd.StorageConfig.ServerList = []string{etcdURL}
 		o.RecommendedOptions.Etcd.StorageConfig.Prefix = uuid.New()
 		serverConfig.Authenticator = nil
-		serverConfig.AuditWriter = os.Stdout
 		serverConfig.Authorizer = authorizerfactory.NewAlwaysAllowAuthorizer()
 		if err := o.RecommendedOptions.Etcd.ApplyTo(serverConfig); err != nil {
 			return nil, err
@@ -177,12 +177,19 @@ func (o MobileServerOptions) RunMobileServer(stopCh <-chan struct{}) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to Complete config")
 	}
-	time.AfterFunc(time.Second*2, func() {
-		//test we can use our clientset
-		client, err := clientset.NewForConfig(server.GenericAPIServer.LoopbackClientConfig)
-		b, err := client.Discovery().RESTClient().Get().AbsPath("/apis/mobile.k8s.io/v1alpha1").DoRaw()
-		fmt.Println("discovery", err, string(b))
-	})
+	client, err := clientset.NewForConfig(server.GenericAPIServer.LoopbackClientConfig)
+	if err != nil {
+		return errors.Wrap(err, "failed to setup mobile client")
+	}
+	informerFactory := internalversion.NewSharedInformerFactory(client, 10*time.Second)
+	mobileInformer := informerFactory.Mobile().InternalVersion().MobileApps()
+	controller, err := mobilecontroller.New(*client, mobileInformer)
+	if err != nil {
+		return errors.Wrap(err, "failed to setup the mobile controller")
+	}
+	go func() {
+		controller.Run(stopCh)
+	}()
 
 	return server.GenericAPIServer.PrepareRun().Run(stopCh)
 }
