@@ -60,4 +60,4 @@ apiserver-1747434594-pzdvv   2/2       Running   0          13m
 ```
 
 You can debug the reason why its not running by using `oc get events -n mobile` and looking for any errors or failure events.
-If the apiserver is not showing, it may have failed to install. Check the install logs for any errors.
+If the apiserver is not showing, it may have failed to install. Check the install logs for any errors.Test change
