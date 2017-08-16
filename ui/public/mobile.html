@@ -69,7 +69,7 @@
           <div class="row row-cards-pf">
             <div ng-repeat="mobileapp in mobileapps" class="col-xs-12 col-sm-6 col-md-3">
               <div class="card-pf card-pf-accented card-pf-aggregate-status">
-                <h2 class="card-pf-title">Name:{{mobileapp.metadata.name}}</h2>
+                <h2 class="card-pf-title">{{mobileapp.metadata.name}}</h2>
                 <div class="card-pf-body">
                   <span class="fa ng-class:['fa-' + mobileapp.metadata.annotations['mobile.k8s.io/iconClass']]"></span>
                   <span class="">{{mobileapp.spec.clientType}}</span>
@@ -80,49 +80,23 @@
           <div class="vertical-divider"></div>
 
           <h2>
-            Mobile Services
+            Provisioned Services
             <span class="page-header-link">
               <a ng-href="http://feedhenry.org/docs/" target="_blank" href="http://feedhenry.org/docs/">
               Learn More <i class="fa fa-external-link" aria-hidden="true"></i>
               </a>
             </span>
             <div class="pull-right ng-scope" ng-if="project && ('services' | canI : 'create')">
-            <a ng-href="project/{{project.metadata.name}}/create-mobileservice" class="btn btn-default">Create Mobile Service</a>
+            <a ng-href="/" class="btn btn-default">Provision Service</a>
             </div>
           </h2>
           <!-- TODO: limit this to 'mobile'' services -->
           <div class="row row-cards-pf">
-            <div ng-repeat="mobileservice in mobileservices" class="col-xs-12 col-sm-6 col-md-3">
+            <div ng-repeat="serviceInstance in serviceInstances" class="col-xs-12 col-sm-6 col-md-3">
               <div class="card-pf card-pf-accented card-pf-aggregate-status">
-                <h2 class="card-pf-title">Name:{{mobileservice.metadata.name}}</h2>
+                <h2 class="card-pf-title">{{serviceInstance.displayName}}</h2>
                 <div class="card-pf-body">
-                  <span class="fa ng-class:['fa-' + mobileservice.metadata.annotations['mobile.k8s.io/iconClass']]"></span>
-                  <span class="">{{mobileservice.spec.clientType}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <h2>
-            Other Services
-            <span class="page-header-link">
-              <a ng-href="http://feedhenry.org/docs/" target="_blank" href="http://feedhenry.org/docs/">
-              Learn More <i class="fa fa-external-link" aria-hidden="true"></i>
-              </a>
-            </span>
-            <div class="pull-right ng-scope" ng-if="project && ('services' | canI : 'create')">
-            <a ng-href="project/{{project.metadata.name}}/create-otherservice" class="btn btn-default">Create Service</a>
-            </div>
-          </h2>
-          <!-- TODO: limit this to 'non-mobile'' services -->
-          <div class="row row-cards-pf">
-            <div ng-repeat="nonmobileservice in nonmobileservices" class="col-xs-12 col-sm-6 col-md-3">
-              <div class="card-pf card-pf-accented card-pf-aggregate-status">
-                <h2 class="card-pf-title">Name:{{nonmobileservice.metadata.name}}</h2>
-                <div class="card-pf-body">
-                  <span class="fa ng-class:['fa-' + nonmobileservice.metadata.annotations['mobile.k8s.io/iconClass']]"></span>
-                  <span class="">{{nonmobileservice.spec.clientType}}</span>
+                  <span>{{serviceInstance.metadata.name}}</span>
                 </div>
               </div>
             </div>

@@ -37,12 +37,10 @@ angular
   .controller('MobileOverviewController', ['$scope', '$controller', '$routeParams', 'ProjectsService', 'APIService', 'DataService', function ($scope, $controller, $routeParams, ProjectsService, APIService, DataService) {
     // Initialize the super class and extend it.
     angular.extend(this, $controller('OverviewController', {$scope: $scope}));
-    console.log('MobileOverviewController');
+    var watches = [];
 
-    // TODO: hook these up to service listing and filtering based on 'mobile' annotations
-    $scope.mobileservices = [];
-    $scope.nonmobileservices = [];
-
+    $scope.serviceInstances = [];
+    $scope.serviceClasses = [];
 
     ProjectsService
       .get($routeParams.project)
@@ -50,15 +48,35 @@ angular
         
         $scope.project = project;
         $scope.context = context;
-        DataService.list({
+        watches.push(DataService.watch({
             group: 'mobile.k8s.io',
             resource: 'mobileapps'
-          }, $scope.context).then(function(resources) {
+          }, $scope.context, function(resources) {
           $scope.mobileapps = resources.by("metadata.name");
           $scope.emptyMessage = "No " + APIService.kindToResource('MobileApp', true) + " to show";
-        });
+        }));
 
+        DataService.list({
+          group: 'servicecatalog.k8s.io',
+          resource: 'serviceclasses'
+        }, context, function(serviceClasses) {
+          $scope.serviceClasses = serviceClasses.by('metadata.name');
+
+          watches.push(DataService.watch({
+            group: 'servicecatalog.k8s.io',
+            resource: 'instances'
+          }, context, function(serviceInstances) {
+            $scope.serviceInstances = serviceInstances.by('metadata.name');
+            _.each($scope.serviceInstances, function(serviceInstance) {
+              serviceInstance.displayName = _.get($scope.serviceClasses, [serviceInstance.spec.serviceClassName, 'externalMetadata', 'displayName']);
+            })
+          }));
+        });
       }));
+
+      $scope.$on('$destroy', function() {
+        DataService.unwatchAll(watches);
+      });
    }])
    .controller('CreateMobileappController',
                 function($filter,
