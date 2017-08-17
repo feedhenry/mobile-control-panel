@@ -3,7 +3,7 @@ The mobile control panel aims to help mobile developers working with and integra
 
 This repo has 3 main parts:
 
-1) ```./server``` The api server which serves as the server side logic for the mcp UI. 
+1) ```./server``` The api server which serves as the server side logic for the mcp UI.
 
 2) ```./ui``` The mcp ui. This is an extension to the OpenShift UI to give a mobile centric view and set of features.
 
@@ -14,22 +14,59 @@ This repo has 3 main parts:
 * `oc` cli >= 3.6.0-rc0 https://github.com/openshift/origin/releases (Known issue with service-catalog in 3.6.0)
 * Node.js >= 4(for install script(s))
 
-## Local Installation
+## Installation
 
-Start openshift, configure it for MCP Extension development, and install the mobile apiserver
+The `installer/` directory contains a collection of Ansible roles to install
+the Mobile Control Panel in OpenShift.
+The installer will perform a number of tasks:
 
-```
-./ui/install.sh
-```
+1. Install the oc tool on the machine
+2. Invoke `oc cluster up` with the Service Catalog enabled
+3. Adding templates to the Template Service Broker in OpenShift
+4. Installing the MCP UI and server components/resources
+5. Creating an Ansible Service Broker in OpenShift
 
-The MCP Extension should now be visible in the OpenShift Web Console after the 'origin' container has restarted.
-Visit https://127.0.0.1:8443 to see the Console.
+### Prerequisites
+
+* A DockerHub account, credentials are required to set up the Ansible Service
+Broker.
+* Execute `ansible-galaxy install -r requirements.yml` in the current directory to
+install dependencies.
+* User with sudo permissions on machine.
+
+### Example
+
+**Running the installer against localhost:**
+
+`ansible-playbook playbook.yml -e "dockerhub_username=myuser" -e "dockerhub_password=mypass" --ask-become-pass`
+
+Once Ansible finished run `oc cluster status` to get the URL of the web console.
 
 To create a mobile app using `oc`:
 
 ```
 oc create -f ./server/hack/install-apiserver/MobileApp.json
 ```
+
+### Variables
+
+Variables can be provided as arguments to the `ansible-playbook` command using
+`-e variable_name=variable_value` or by populating the
+`vars/mobile-control-panel.yml` file.
+
+#### Mandatory
+* `dockerhub_username` - DockerHub username
+* `dockerhub_password` - DockerHub password
+
+***Note: If `dockerhub_username` and `dockerhub_password` are not specified the
+Ansible Service broker will not be created.***
+
+#### Optional
+* `templates` - A list of templates to create for the Template Service Broker.
+The values can be local paths or URLs. Example: `-e "templates=['/path/to/template.yaml']"`
+* `host_config_dir` - Where to create or use the existing host config during `oc cluster up`.
+* `cluster_version` - The version of images to use during `oc cluster up`.
+* `cluster_public_hostname` - The hostname to use with `--public-ip` and `--routing-suffix` options in `oc cluster up`.
 
 ## Cleanup
 
