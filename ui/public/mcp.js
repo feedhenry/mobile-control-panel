@@ -66,7 +66,6 @@ angular
                         $routeParams,
                         $scope,
                         $window,
-                        ApplicationGenerator,
                         AuthorizationService,
                         DataService,
                         Navigate,
