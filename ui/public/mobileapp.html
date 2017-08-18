@@ -1,0 +1,83 @@
+<project-header class="top-header"></project-header>
+<project-page class="overview">
+  
+  <div class="middle-section">
+    <div class="middle-container">
+
+      <div class="middle-content">
+        <div class="container-fluid">
+          <breadcrumbs breadcrumbs="breadcrumbs"></breadcrumbs>
+          <alerts alerts="alerts"></alerts>
+          <div ng-if="!loaded" class="mar-top-xl">Loading...</div>
+          <div ng-if="mobileapp">
+            <h1 class="contains-actions">
+              <div class="pull-right dropdown">
+                <button type="button" class="dropdown-toggle btn btn-default actions-dropdown-btn hidden-xs" data-toggle="dropdown">
+                  Actions
+                  <span class="caret"></span>
+                </button>
+                <a href=""
+                   class="dropdown-toggle actions-dropdown-kebab visible-xs-inline"
+                   data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i><span class="sr-only">Actions</span></a>
+                <ul class="dropdown-menu dropdown-menu-right actions action-button">
+                  <li>
+                    <a ng-href="project/{{project.metadata.name}}/create-mobileapp"
+                       role="button">Create Mobile App</a>
+                  </li>
+                  <li>
+                    <a ng-href="{{mobileapp | editYamlURL}}" role="button">Edit YAML</a>
+                  </li>
+                  <li>
+                    <delete-link
+                      kind="Mobileapp"
+                      resource-name="{{mobileapp.metadata.name}}"
+                      project-name="{{mobileapp.metadata.namespace}}"
+                      alerts="alerts">
+                    </delete-link>
+                  </li>
+                </ul>
+              </div>
+              <span class="ng-class:[mobileapp.metadata.annotations['mobile.k8s.io/iconClass']]"></span> {{mobileapp.metadata.name}}
+              <small class="meta">created <span am-time-ago="mobileapp.metadata.creationTimestamp"></span></small>
+            </h1>
+            <labels labels="mobileapp.metadata.labels" clickable="true" kind="mobileapps" project-name="{{mobileapp.metadata.namespace}}" limit="3"></labels>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row" ng-if="!syncconfig">
+            <div class="col-md-12">
+              <p>No supported provisioned services with a binding found</p>
+            </div>
+          </div>
+          <div class="row" ng-if="mobileapp && syncconfig">
+            <div class="col-md-12">
+              <uib-tabset>
+                <uib-tab active="selectedTab.integrate">
+                  <uib-tab-heading>Sync SDK Integration</uib-tab-heading>
+                  <div class="resource-integrate">
+                    <h3>Getting Started</h3>
+                    <p>To start with an example Sync app, clone/fork the repo at <a href="https://github.com/feedhenry-templates/feedhenry-cordova-sync-app">https://github.com/feedhenry-templates/feedhenry-cordova-sync-app</a>. If you already have an App, you can still follow the below instructions to integrate the Sync SDK.</p>
+                    <h3>SDK Config</h3>
+                    <p>Copy the below contents in sync-config.json in the root of the project.</p>
+                    <pre>{{syncconfig}}</pre>
+                    <h3>SDK Installation</h3>
+                    <p>Add the Sync SDK to the App. This example is using npm for dependency management. Alternatively, you can download releases from <a href="https://github.com/feedhenry/fh-sync-js/releases">https://github.com/feedhenry/fh-sync-js/releases</a>. This is already done for you if starting from the example sync app.</p>
+                    <pre>npm install --save fh-sync-js@latest</pre>
+                    <h3>SDK Initialisation</h3>
+                    <p>Load the SDK config file &amp; initialise the Sync SDK. This example is using AngularJS. Again, this is already done for you if starting from the example sync app.</p>
+                    <pre>angular
+  .constant('fhSync', require('fh-sync-js'))
+  .constant('fhSyncConfig', require('../../sync-config.json'))
+
+fhSync.init({
+  cloudUrl: fhSyncConfig.uri
+});</pre>
+                   <p>You can then use the Sync API in your App. For more info on how to use the Sync API, see the example app at <a href="https://github.com/feedhenry-templates/feedhenry-cordova-sync-app">https://github.com/feedhenry-templates/feedhenry-cordova-sync-app</a> and the <a href="http://feedhenry.org/fh-js-sdk/modules/_fh_js_sdk_d_.feedhenry.sync.html">Sync API Documentation</a></p>
+                  </div>
+                </uib-tab>
+              </uib-tabset>
+            </div><!-- /col-* -->
+          </div>
+        </div>
+      </div><!-- /middle-content -->
+</project-page>
