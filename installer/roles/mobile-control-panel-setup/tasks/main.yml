@@ -4,6 +4,8 @@
 - name: Execute MCP UI installer
   shell: "{{ mcp_local_dir }}/ui/install.sh"
   changed_when: false
+  register: mcp_installer_output
+  failed_when: mcp_installer_output.stderr.find('already exists') == -1
 
 # TODO: Use Ansible module here, not oc from shell
 - name: Login as system:admin
