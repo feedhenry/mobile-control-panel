@@ -3,7 +3,7 @@
 readonly DOCKERHUB_USER="${1}"
 readonly DOCKERHUB_PASS="${2}"
 readonly DOCKERHUB_ORG="${3}"
-
+readonly LAUNCH_APB_ON_BIND="${4}"
 curl -s https://raw.githubusercontent.com/openshift/ansible-service-broker/master/templates/deploy-ansible-service-broker.template.yaml > /tmp/deploy-ansible-service-broker.template.yaml
 
 oc login -u system:admin
@@ -12,7 +12,8 @@ oc process -f /tmp/deploy-ansible-service-broker.template.yaml \
     -n ansible-service-broker \
     -p DOCKERHUB_USER="${DOCKERHUB_USER}" \
     -p DOCKERHUB_PASS="${DOCKERHUB_PASS}" \
-    -p DOCKERHUB_ORG="${DOCKERHUB_ORG}" | oc create -f -
+    -p DOCKERHUB_ORG="${DOCKERHUB_ORG}" \
+    -p LAUNCH_APB_ON_BIND="${LAUNCH_APB_ON_BIND}" | oc create -f -
 
 if [ "${?}" -ne 0 ]; then
 	echo "Error processing template and creating deployment"

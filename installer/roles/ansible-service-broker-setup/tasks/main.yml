@@ -21,7 +21,7 @@
       mode: u+x
 
   - name: Execute Ansible Service Broker provision script
-    shell: bash /tmp/provision-ansible-service-broker.sh "{{ dockerhub_username }}" "{{ dockerhub_password }}" "{{ dockerhub_org }}"
+    shell: bash /tmp/provision-ansible-service-broker.sh "{{ dockerhub_username }}" "{{ dockerhub_password }}" "{{ dockerhub_org }}" "{{ launch_apb_on_bind }}"
   when:
   - dockerhub_username is defined
   - dockerhub_username != ''
@@ -29,6 +29,8 @@
   - dockerhub_password != ''
   - dockerhub_org is defined
   - dockerhub_org != ''
+  - launch_apb_on_bind is defined
+  - launch_apb_on_bind != ''
   - oc_get_broker.stderr.find('NotFound') > -1
 
 - name: Ensure oc cluster is up

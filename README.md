@@ -68,6 +68,8 @@ The values can be local paths or URLs. Example: `-e "templates=['/path/to/templa
 * `host_config_dir` - Where to create or use the existing host config during `oc cluster up`.
 * `cluster_version` - The version of images to use during `oc cluster up`.
 * `cluster_public_hostname` - The hostname to use with `--public-ip` and `--routing-suffix` options in `oc cluster up`.
+* `dockerhub_org` - The org to point the ASB to, to look for APB images (defaults to `ansibleplaybookbundle`)
+* `launch_apb_on_bind` - Set to true to have binds kick off a fresh APB to run the bind playbook (times out at 60 seconds, defaults to `False`)
 
 ## Cleanup
 
