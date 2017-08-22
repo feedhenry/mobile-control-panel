@@ -1,2 +1,3 @@
 ---
 # defaults file for ansible-service-broker-setup
+dockerhub_org: ansibleplaybookbundle
