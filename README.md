@@ -13,6 +13,7 @@ This repo has 3 main parts:
 
 * `oc` cli >= 3.6.0-rc0 https://github.com/openshift/origin/releases (Known issue with service-catalog in 3.6.0)
 * Node.js >= 4(for install script(s))
+* Stop a local running cluster using `oc cluster down`.
 
 ## Installation
 
