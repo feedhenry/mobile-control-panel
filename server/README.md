@@ -62,11 +62,10 @@ make images
 │       │   └── certificates
 │       └── start
 ├── hack # various scripts for use during development
-│   ├── install-apiserver
-│   │   ├── catalog
-│   │   ├── kubernetes
-│   │   └── openshift
-│   └── template-service-broker
+│   └── install-apiserver
+│       ├── catalog
+│       ├── kubernetes
+│       └── openshift
 ├── pkg # main go packages
 │   ├── apis # the api resource definitions and registration such as MobileApp
 │   │   └── mobile
