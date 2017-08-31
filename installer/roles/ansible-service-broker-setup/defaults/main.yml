@@ -1,4 +1,7 @@
 ---
 # defaults file for ansible-service-broker-setup
-dockerhub_org: ansibleplaybookbundle
+dockerhub_org: feedhenry
 launch_apb_on_bind: false
+
+asb_template_commit: 4e98b3bd3e723a8db222ccaca4050a750cee1394
+asb_template_url: https://raw.githubusercontent.com/openshift/ansible-service-broker/{{ asb_template_commit }}/templates/deploy-ansible-service-broker.template.yaml
