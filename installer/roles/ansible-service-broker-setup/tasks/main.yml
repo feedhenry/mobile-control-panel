@@ -20,8 +20,13 @@
       dest: /tmp/provision-ansible-service-broker.sh
       mode: u+x
 
+  - name: Retrieve Ansible Service Broker template
+    get_url:
+      url: "{{ asb_template_url }}"
+      dest: /tmp/deploy-ansible-service-broker.template.yaml
+
   - name: Execute Ansible Service Broker provision script
-    shell: bash /tmp/provision-ansible-service-broker.sh "{{ dockerhub_username }}" "{{ dockerhub_password }}" "{{ dockerhub_org }}" "{{ launch_apb_on_bind }}"
+    shell: bash /tmp/provision-ansible-service-broker.sh "{{ dockerhub_username }}" "{{ dockerhub_password }}" "{{ dockerhub_org }}" "{{ launch_apb_on_bind }}" "{{ cluster_public_hostname }}.nip.io"
   when:
   - dockerhub_username is defined
   - dockerhub_username != ''
