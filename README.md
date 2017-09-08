@@ -1,3 +1,8 @@
+## Active development has moved to the following repo
+
+(mcp-standalone)[https://github.com/feedhenry/mcp-standalone]
+
+
 # mobile-control-panel (mcp)
 The mobile control panel aims to help mobile developers working with and integrating with mobile enabled services on OpenShift. It provides a mobile centric view and set of features designed to enable mobile developers to focus on building great mobile applications with deep server side integrations to powerful services such as server side data sync, push notification, authentication etc without necessarily worrying about how to provision and configure those services to work with their mobile clients.
 
